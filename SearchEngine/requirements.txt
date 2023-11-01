@@ -1,0 +1,4 @@
+requests
+numpy
+beautifulsoup4
+urllib.parse
