@@ -1,12 +1,29 @@
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, urljoin 
+import whoosh 
+import os, os.path
+
+
 
 
 # Crawler 
 queue = ["https://vm009.rz.uos.de/crawl/"]
 visited_links = set()
 dictionary = {}
+
+# Create a folder for the index to be saved
+# Check if an index exists and open if possible
+
+try:
+    ix = index.open_dir("indexdir")
+except:
+    if not os.path.exists("indexdir"):
+        os.mkdir("indexdir")
+        ix = index.create_in("indexdir", whoosh.fields.text)
+
+# Create the writer for adding docs to the index
+writer = ix.writer()
 
 def spider():
     while queue:
@@ -25,6 +42,7 @@ def spider():
 
             # Add the URL and all included words to the dictionary
             dictionary[current_url] = words
+
             
             # Update our stack of URLS
             # find the anchor elements in the html used to create hyperlinks
@@ -42,12 +60,12 @@ def spider():
 spider()
 
 # Search function
-def search(words = []):
+def search(index = dictionary, words = []):
     # List of all matching keys (optional)
     matching_keys = []
-    for key in dictionary:
+    for key in index:
         # Bool variable if all words were found on the site 
-        all_words_found = all(word in dictionary[key] for word in words)
+        all_words_found = all(word in index[key] for word in words)
         if all_words_found:
             # optional
             matching_keys.append(key)
