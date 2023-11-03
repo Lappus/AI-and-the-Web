@@ -42,12 +42,12 @@ def spider():
 spider()
 
 # Search function
-def search(words = []):
+def search(index = dictionary, words = []):
     # List of all matching keys (optional)
     matching_keys = []
     for key in dictionary:
         # Bool variable if all words were found on the site 
-        all_words_found = all(word in dictionary[key] for word in words)
+        all_words_found = all(word in index[key] for word in words)
         if all_words_found:
             # optional
             matching_keys.append(key)
