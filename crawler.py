@@ -9,6 +9,20 @@ queue = ["https://vm009.rz.uos.de/crawl/"]
 visited_links = set()
 dictionary = {}
 
+# Create a folder for the index to be saved
+# Check if an index exists and open if possible
+
+try:
+    ix = index.open_dir("indexdir")
+except:
+    if not os.path.exists("indexdir"):
+        os.mkdir("indexdir")
+        ix = index.create_in("indexdir", whoosh.fields.text)
+
+# Create the writer for adding docs to the index
+writer = ix.writer()
+
+
 def spider():
     while queue:
         # Getting the next URL to search through
