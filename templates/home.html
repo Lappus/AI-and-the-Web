@@ -1,15 +1,9 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Search bar</title>
-    </head>
-    <body>
-        <h1>Next search:</h1>
-        <form action='/search' method="get">
-            <label for="q">What do you want to look up?</label>
-            <input name='q' type='text' required>
+{% extends 'base.html' %}
 
-            <input type="submit">
-        </form>      
-    </body>
-</html>
+{% block title %}
+BB 
+{% endblock %}
+
+{% block body %}
+<h1 class="title"> Brainy-Browse </h1>
+{% endblock %}
