@@ -73,10 +73,10 @@ def spider(index_path, website):
                         queue.append(absolute_url)
     writer.commit()
 
-spider("indexdir","https://vm009.rz.uos.de/crawl/")
+#spider("indexdir","https://vm009.rz.uos.de/crawl/")
 
 # Search function
-def search_index(query):
+def search2(index_path, query):
     """
     Searches the given whoosh index for the given words
 
@@ -86,7 +86,7 @@ def search_index(query):
 
     """
    
-    ix = whoosh.index.open_dir("indexdir")
+    ix = whoosh.index.open_dir(index_path)
     # join the list of words into a string
     query = "".join(query)
 
@@ -100,3 +100,24 @@ def search_index(query):
 
 #search("indexdir", "platypus" )
 
+#-------------------------------------------- FLASK PART ------------------------------------------
+
+# What does this do exactly? 
+app = Flask(__name__)
+
+# creates the first view, a start page where user can input query
+@app.route("/", methods=["GET"])
+def home():
+    return render_template("home.html")
+
+# creates the second view, a result page with the corresponding matches to query
+@app.route("/search", methods=["GET"])
+def search():
+    # safe the query from start view
+    query = request.args.get('q')
+    if query:
+        # get the matching websites to the query 
+        matches = search2(index_path="indexdir", query=query.split())
+        return render_template("search.html", matches=matches, query=query)
+    else:
+        return "Please enter a query."

@@ -7,7 +7,7 @@
         <h1>Web pages that contain all specified words: {{query}}</h1>
         {% if matches %}
             <ul>{% for match in matches %}
-                <li><a href="{{match}}">{{match}}</a></li>
+                <li><a href="{{match['title']}}">{{ match['title'] }}</a></li>
                 {% endfor %}
             </ul>
         {% else %}
