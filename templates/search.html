@@ -1,17 +1,65 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Search results</title>
-    </head>
+        <style>
+            body {
+                font-family: 'Arial', sans-serif;
+                background-color: #CCCCCC;
+                color: #333333;
+                margin: 0;
+                padding: 20px;
+            }
+    
+            h1 {
+                color: #333333;
+            }
+            
+            ul {
+            list-style-type: none;
+            padding: 0;
+            }
+
+            li {
+                background-color: #fff;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                margin-bottom: 10px;
+                padding: 15px;
+                border-radius: 5px;
+            }
+
+            a {
+                text-decoration: none;
+                color: #2980b9;
+            }
+
+            a:hover {
+                text-decoration: underline;
+            }
+
+            p {
+                color: #e74c3c;
+            }
+
+            .cursive {
+                font-style: italic;
+            }
+        </style>
+</head>
     <body>
-        <h1>Web pages that contain all specified words: {{query}}</h1>
+        <h1>Web pages that contain the word(s): <em>{{ query }}</em> </h1>
         {% if matches %}
             <ul>{% for match in matches %}
-                <li><a href="{{match['title']}}">{{ match['title'] }}</a></li>
+                <li>
+                    <span style="font-weight: bold;">{{ loop.index }}.</span>
+                    <a href="{{match['title']}}">{{ match['title'] }}</a>
+                </li>
                 {% endfor %}
             </ul>
         {% else %}
-            <p>Sorry, no matches were found</p>
+        <p style="color: #e74c3c;">Sorry, no matches were found</p>
         {% endif %}
     </body>
 </html>
