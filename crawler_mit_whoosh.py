@@ -76,7 +76,7 @@ def spider(index_path, website):
 spider("indexdir","https://vm009.rz.uos.de/crawl/")
 
 # Search function
-def search(index_path, query):
+def search2(query):
     """
     Searches the given whoosh index for the given words
 
@@ -86,7 +86,7 @@ def search(index_path, query):
 
     """
    
-    ix = whoosh.index.open_dir(index_path)
+    ix = whoosh.index.open_dir("indexdir")
     # join the list of words into a string
     query = "".join(query)
 

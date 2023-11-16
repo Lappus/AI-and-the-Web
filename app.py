@@ -1,5 +1,5 @@
 from flask import Flask, render_template
-from crawler_mit_whoosh import request, search
+from crawler_mit_whoosh import request, search2
 
 app = Flask(__name__)
 @app.route('/')
@@ -12,7 +12,7 @@ def search():
     if request.method =='GET':
         query = request.args.get('q')
         if query:
-            matches = search(query.split())
+            matches = search2(query.split())
             return render_template("search.html", matches=matches, query=query)
         else:
             return "Please enter a query"
