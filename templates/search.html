@@ -16,7 +16,7 @@
             h1 {
                 color: #333333;
             }
-            
+
             ul {
             list-style-type: none;
             padding: 0;
@@ -49,7 +49,11 @@
         </style>
 </head>
     <body>
-        <h1>Web pages that contain the word(s): <em>{{ query }}</em> </h1>
+        {% if suggestions %}
+            <h1>Did you mean <em>{{ suggestions }}</em> instead of <em>{{misspelled}}</em>? Here are results for {{ query }} </h1>
+        {% else %}
+            <h1>Web pages that contain the word(s): <em>{{ query }}</em> </h1>
+        {% endif %}
         {% if matches %}
             <ul>{% for match in matches %}
                 <li>

@@ -7,6 +7,7 @@ import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, urljoin 
 from flask import Flask, request, render_template
+from whoosh.query import And, Term
 
 # Create a folder for the index to be saved
 # Check if an index exists and open if possible
@@ -87,13 +88,16 @@ def search_function(index_path, query):
     """
    
     ix = whoosh.index.open_dir(index_path)
-    # join the list of words into a string
-    query = "".join(query)
+
+    # Create a query for each word in the list
+    queries = [Term("content", word) for word in query]
+
+    # Combine the queries with an AND operator (we want webpages that contain ALL of the input words)
+    combined_query = And(queries)
 
     with ix.searcher() as searcher: 
-        # find entries with the words in query
-        query = QueryParser("content", ix.schema).parse(query)
-        results = searcher.search(query)
+
+        results = searcher.search(combined_query)
         hits = [hit.fields() for hit in results]
 
     return hits

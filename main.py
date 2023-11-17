@@ -4,7 +4,7 @@ from spellchecker import SpellChecker
 
 # ------------------------------------------- Initialize whoosh Index with first URL --------------------------------
 
-crawler.spider("indexdir","https://vm009.rz.uos.de/crawl/")
+#crawler.spider("indexdir","https://vm009.rz.uos.de/crawl/")
 
 # -------------------------------------------- FLASK PART ------------------------------------------
 
@@ -24,14 +24,31 @@ def home():
 def search():
     # safe the query from start view
     query = request.args.get('q')
+
+    # first check if there is actually user input
     if query:
-
+        print("query:",query)
         # Check for potential typos and get suggestions
-        misspelled = spell.unknown(query.split())
-        suggestions = {word: spell.correction(word) for word in misspelled}
-
-        # get the matching websites to the query 
-        matches = crawler.search_function(index_path="indexdir", query=suggestions.values())
-        return render_template("search.html", matches=matches, query=query, suggestions=suggestions)
+        suggestions = {}
+        misspelled = spell.unknown(query.split(", "))
+        correctly_spelled = spell.known(query.split(", "))
+        print("misspelled:",misspelled, type(misspelled))
+        print("coorect:",correctly_spelled, type(correctly_spelled))
+        if misspelled:
+            suggestions = {spell.correction(word) for word in misspelled}
+            print("suggest",type(suggestions))
+            
+            query = list(suggestions.union(correctly_spelled))
+            print("n.q", query, type(query))
+            # get the matching websites to the query 
+            # if there are misspelled words, we pass the corrected suggestions
+            matches = crawler.search_function(index_path="indexdir", query=list(query))
+            #return render_template("search.html", matches=matches, query=query, suggestions=suggestions)
+        else:
+            print("q.v", query.split(), type(query.split()))
+            # if there are no misspelled words, we just pass the original query
+            matches = crawler.search_function(index_path="indexdir", query=query.split(", "))
+        return render_template("search.html", matches=matches, query=query, suggestions=suggestions, misspelled=misspelled)
+    
     else:
         return "Please enter a query."
