@@ -28,11 +28,12 @@ def spider(index_path, website):
 
     # Create a folder for the index to be saved
     # Check if an index exists and open if possible
-    if not os.path.exists(index_path):
+    if whoosh.index.exists_in(index_path):
+         ix = whoosh.index.open_dir(index_path)
+    else:
         os.mkdir(index_path)
         ix = whoosh.index.create_in(index_path, schema)
-    else:
-            ix = whoosh.index.create_in(index_path, schema)
+           
 
     # Create the writer for adding docs to the index
     writer = ix.writer()
@@ -42,7 +43,6 @@ def spider(index_path, website):
     while queue:
         # Getting the next URL to search through
         current_url = queue.pop(0)
-        
         # But only the ones we haven't searched yet
         if current_url not in visited_links:
 
@@ -71,8 +71,35 @@ def spider(index_path, website):
                 if href:
                     absolute_url = urljoin(current_url, href)
 
-                    if absolute_url.startswith("https://vm009.rz.uos.de/crawl/") and absolute_url not in visited_links:
+                    if absolute_url.startswith(website) and absolute_url not in visited_links:
                         queue.append(absolute_url)
+                        
+            for link in soup.find_all('button'):
+
+                # retrieving the URL that the button points to
+                href = link.get('href')
+
+                # fusing the main URL with the new href part of the link
+                if href:
+                    absolute_url = urljoin(current_url, href)
+
+                    if absolute_url.startswith(website) and absolute_url not in visited_links:
+                        queue.append(absolute_url)
+
+            for link in soup.find_all('link'):
+
+                # retrieving the URL that the link points to
+                href = link.get('href')
+
+                # fusing the main URL with the new href part of the link
+                if href:
+                    absolute_url = urljoin(current_url, href)
+
+                    if absolute_url.startswith(website) and absolute_url not in visited_links:
+                        queue.append(absolute_url)
+
+            
+
     writer.commit()
 
 # -----------------------------------------  Search function   -----------------------------------------
