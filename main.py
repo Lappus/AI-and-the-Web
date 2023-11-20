@@ -42,12 +42,12 @@ def search():
             print("n.q", query, type(query))
             # get the matching websites to the query 
             # if there are misspelled words, we pass the corrected suggestions
-            matches = crawler.search_function(index_path="indexdir", query=list(query))
+            matches = crawler.search_function(query=list(query))
             #return render_template("search.html", matches=matches, query=query, suggestions=suggestions)
         else:
             print("q.v", query.split(), type(query.split()))
             # if there are no misspelled words, we just pass the original query
-            matches = crawler.search_function(index_path="indexdir", query=query.split(", "))
+            matches = crawler.search_function(query=query.split(", "))
         return render_template("search.html", matches=matches, query=query, suggestions=suggestions, misspelled=misspelled)
     
     else:

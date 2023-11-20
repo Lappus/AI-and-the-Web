@@ -14,7 +14,7 @@ from whoosh.query import And, Term
 
 # -----------------------------------------  whoosh index  -----------------------------------------
 
-def spider(index_path, website):
+def spider(index_path="index_dir", website= "https://vm009.rz.uos.de/crawl/"):
     """
     Crawls the given website and sub-pages for html content
     Creates an index at the given path
@@ -63,9 +63,9 @@ def spider(index_path, website):
 
             # Update our stack of URLS
             # find the anchor elements in the html used to create hyperlinks
-            for link in soup.find_all('a'):
+            for anchor in soup.find_all('a'):
                 # retrieving the URL that the anchor points to
-                href = link.get('href')
+                href = anchor.get('href')
 
                 # fusing the main URL with the new href part of the link
                 if href:
@@ -74,10 +74,11 @@ def spider(index_path, website):
                     if absolute_url.startswith(website) and absolute_url not in visited_links:
                         queue.append(absolute_url)
                         
-            for link in soup.find_all('button'):
+            for button in soup.find_all('button'):
 
                 # retrieving the URL that the button points to
-                href = link.get('href')
+                if button.get('href') != None:
+                    href = button.get('href')
 
                 # fusing the main URL with the new href part of the link
                 if href:
@@ -89,7 +90,8 @@ def spider(index_path, website):
             for link in soup.find_all('link'):
 
                 # retrieving the URL that the link points to
-                href = link.get('href')
+                if link.get('href') != None:
+                    href = link.get('href')
 
                 # fusing the main URL with the new href part of the link
                 if href:
@@ -104,7 +106,7 @@ def spider(index_path, website):
 
 # -----------------------------------------  Search function   -----------------------------------------
 
-def search_function(index_path, query):
+def search_function(query, index_path="index_dir"):
     """
     Searches the given whoosh index for the given words
 
@@ -126,5 +128,5 @@ def search_function(index_path, query):
 
         results = searcher.search(combined_query)
         hits = [hit.fields() for hit in results]
-
+    print(hits)
     return hits
