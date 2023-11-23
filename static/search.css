@@ -4,101 +4,58 @@ body {
     height: 100%;
     box-sizing: border-box;
     font-family: 'Times New Roman', Times, serif;
-    background-image: url(shelf.jpg)
-}
-
-
-html{
-    height:100%;
-}
-
-.container{
-    width: 100%;
-    min-height: 0vh;
-    padding: 0%;
+    background-image: url(images/shelf.jpg);
     background-position: center;
     background-size: cover;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-left: 30%;
-    margin-right: 20%;
-}
-
-.search-bar{
-    width: 50%;
-    max-width: 500px;
-    background: rgba(255, 255, 255, 0.2); 
-    align-items: center;
-    border-radius: 40px;
-    padding: 15px 20px;
-    display: flex;
-    justify-content: space-between;
-    margin-left: 15%;
-    margin-right: 20%;
-}
-
-.search-input{
-    flex: 1;
-    border: none;
-    outline: none;
-    font-size: 15px;
-    padding: 10px 10px;
-    margin-right: 10px;
-}
-
-.search-button{
-    margin-left: 10px; 
-    padding: 10px 10px; 
-    border: none; 
-    border-radius: 5px; 
-    background-color: #333; 
-    color: white; 
-    cursor: pointer;
-}
-
-.title{
-    text-align: center;
-    color: white;
-    margin-top:0vh;
-    margin-bottom: 0vh;
-    font-size: 25px;
-}
-
-.navbar-btn {
-    font-size: 20px; 
-    padding: 8px 12px; 
-    margin: 0 0px;
-    color: white; 
 }
 
 .image-container {
-    position: relative;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 100%;
-    max-width: 800px; /* Set the maximum width for the image container */
-    margin: 0 auto; /* Center the container horizontally */
+    max-width: 900px;
+    text-align: center;
 }
 
 .image-container img {
     display: block;
-    width: 130%;
+    width: 105%;
     height: auto;
 }
 
 .text-container {
     position: absolute;
-    top: 5%;
+    max-width: 500px;
+    font-size: 0.9em;
+    top: 30px;
     left: 30px;
     padding: 20px;
-    z-index: 2; /* Ensure the text container is above the image */
+    z-index: 2;
+    color: rgb(31, 29, 31); /* Adjust text color */
+    text-align: left;
 }
+
 
 .text-container h1 {
     margin: 0;
-    font-size: 2em; /* Adjust heading font size */
+    font-size: 2em;
 }
 
-.text-container p {
-    margin: 10px 0;
-    font-size: 1.2em; /* Adjust paragraph font size */
+.text-container a {
+    color: #3498db; /* Set link color */
+    text-decoration: none; /* Remove underline */
+    transition: color 0.3s ease; /* Smooth color transition on hover */
+    font-size: 1.3em;
 }
+
+.text-container a:hover {
+    color: #6d09ca; /* Change color on hover */
+}
+
+.text-container ul {
+    list-style-type: none; /* Remove list bullets */
+    padding: 0;
+}
+

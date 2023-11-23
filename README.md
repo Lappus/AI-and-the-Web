@@ -9,3 +9,10 @@
 2. Update (17.11):
    - die Search Ausgabeseite habe ich an das Main Layout angeglichen.
    - es gibt noch probleme des Layouts bei unterschiedlicher Fenstergröße (öffne ich die website auf meinem Laptopbildschirm verschiebt sich einiges)
+
+3. Update (23.11)
+   - we need to change something so it accepts lower and upper case letters
+   - how can we get rid of the brackets in the output around the words(only relevant when spell-checker corrects words)? 
+   - search history output needs to be adapted!! I am so over css, is there a way to write a main css from which the other ones inheret? the current code is so redundant
+   - search history css needs to be adapted so it looks pretty, but I am tired now und hab kein Bock mehr:) 
+   - how can we put the .css files into the css folder within static in a way that it still finds them?

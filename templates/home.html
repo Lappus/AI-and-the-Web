@@ -1,9 +1,14 @@
 {% extends 'base.html' %}
 
 {% block title %}
-BB 
+<h1> Brainy-Browse </h1>
 {% endblock %}
 
-{% block body %}
-<h1 class="title"> Brainy-Browse </h1>
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='main.css')}}"/>
+
+    <form action="{{ url_for('search') }}" method="get" class="search-bar">
+        <input type="text" placeholder="Search anything" name="q" class="search-input" >
+        <button type="submit" class="search-button"><img src="../static/images/brain.png" width="30" height="30" alt="Search"></button>
+    </form>
 {% endblock %}

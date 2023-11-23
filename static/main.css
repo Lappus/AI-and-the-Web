@@ -4,76 +4,70 @@ body {
     height: 100%;
     box-sizing: border-box;
     font-family: 'Times New Roman', Times, serif;
-    background-image: url(shelf.jpg)
-}
-
-html{
-    height:100%;
-}
-
-.container{
-    width: 100%;
-    min-height: 0vh;
-    padding: 0%;
+    background-image: url(images/shelf.jpg);
     background-position: center;
     background-size: cover;
+    overflow: hidden; /* Hide overflow content */
+}
+
+html {
+    height: 100%;
+}
+
+.container {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: 30%;
-    margin-right: 20%;
+    height: 85vh; /* Set the container to 100% of the viewport height */
 }
 
-.search-bar{
-    width: 50%;
-    max-width: 500px;
-    background: rgba(255, 255, 255, 0.2); 
-    align-items: center;
-    border-radius: 40px;
-    padding: 15px 20px;
+.text-container h1 {
+    margin: 0;
+    font-size: 2em;
+}
+
+.search-bar {
+    width: 100%;
+    max-width: 900px;
+    background: rgba(255, 255, 255, 0.595);
+    border-radius: 35px;
+    padding: 55px;
     display: flex;
     justify-content: space-between;
-    margin-left: 15%;
-    margin-right: 20%;
+    align-items: center;
 }
 
-.search-input{
+.search-input {
     flex: 1;
     border: none;
     outline: none;
-    font-size: 15px;
-    padding: 10px 10px;
-    margin-right: 10px;
+    font-size: 35px;
+    padding: 20px;
 }
 
-.search-button{
-    margin-left: 10px; 
-    padding: 10px 10px; 
-    border: none; 
-    border-radius: 5px; 
-    background-color: #333; 
-    color: white; 
+.search-button {
+    margin-left: 10px;
+    padding: 30px 35px;
+    border: none;
+    border-radius: 10px;
+    background-color: rgb(7, 18, 6);
     cursor: pointer;
 }
 
-.title{
+.title {
     text-align: center;
     color: white;
-    margin-top:0vh;
+    margin-top: 0vh;
     margin-bottom: 0vh;
-    font-size: 25px;
+    font-size: 60px;
 }
 
 .navbar-btn {
-    font-size: 20px; 
-    padding: 8px 12px; 
-    margin: 0 0px;
-    color: white; 
-}
-
-.results {
-    font-size: 20px; 
-    padding: 8px 12px; 
+    font-size: 35px;
+    padding: 8px 12px;
     margin: 0 0px;
     color: white;
 }
+
+
+

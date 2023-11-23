@@ -1,0 +1,46 @@
+
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    box-sizing: border-box;
+    font-family: 'Times New Roman', Times, serif;
+    background-image: url(images/shelf.jpg);
+    background-position: center;
+    background-size: cover;
+  }
+  
+  .image-container {
+    position: relative;
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  
+  .text-container {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgb(12, 12, 12);
+  }
+  
+  .text-container h1 {
+    margin: 0;
+    font-size: 2em;
+  }
+  
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  ul li {
+    margin-bottom: 10px;
+  }
+  
+  ul li a {
+    text-decoration: none;
+    color: rgb(59, 58, 58);
+    font-size: 1.2em;
+  }
