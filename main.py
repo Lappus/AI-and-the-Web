@@ -4,7 +4,7 @@ from spellchecker import SpellChecker
 
 # ------------------------------------------- Initialize whoosh Index with first URL --------------------------------
 
-#crawler.spider("indexdir","https://vm009.rz.uos.de/crawl//crawl/")
+crawler.spider("index_dir","https://vm009.rz.uos.de/crawl/")
 
 # -------------------------------------------- FLASK PART ------------------------------------------
 
@@ -52,6 +52,7 @@ def search():
             #print("q.v", query.split(), type(query.split()))
             # if there are no misspelled words, we just pass the original query
             matches = crawler.search_function(query=query.split(", "))
+        print("match:", matches)
         return render_template("search.html", matches=matches, query=query, suggestions=suggestions, misspelled=misspelled)
     
     else:

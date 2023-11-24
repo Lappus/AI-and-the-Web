@@ -19,43 +19,41 @@ body {
     text-align: center;
 }
 
-.image-container img {
-    display: block;
-    width: 105%;
-    height: auto;
-}
-
 .text-container {
     position: absolute;
-    max-width: 500px;
+    max-width: 450px;
     font-size: 0.9em;
     top: 30px;
     left: 30px;
     padding: 20px;
-    z-index: 2;
     color: rgb(31, 29, 31); /* Adjust text color */
+    border-right: 1px solid #ddd; /* Fine grey line separating text and list */
     text-align: left;
 }
 
-
-.text-container h1 {
-    margin: 0;
-    font-size: 2em;
+/* Style for the list group */
+.list-group {
+    width: 50%; /* Half the width */
+    overflow-y: auto; /* Add scrollbar if content exceeds height */
+    padding: 20px; /* Adjust as needed */
 }
 
-.text-container a {
+/* Style for each list item */
+.list-group-item {
+    border: 1px solid #ddd; /* Fine grey line separating list items */
+    margin-bottom: 10px; /* Adjust as needed */
+    text-align: left;
+    background-color: #3a3636 !important;/* White background */
+}
+
+.mb-1 {
     color: #3498db; /* Set link color */
     text-decoration: none; /* Remove underline */
     transition: color 0.3s ease; /* Smooth color transition on hover */
     font-size: 1.3em;
 }
 
-.text-container a:hover {
+.mb-1:hover {
     color: #6d09ca; /* Change color on hover */
-}
-
-.text-container ul {
-    list-style-type: none; /* Remove list bullets */
-    padding: 0;
 }
 

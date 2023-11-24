@@ -9,6 +9,7 @@ from urllib.parse import urlparse, urljoin
 from flask import Flask, request, render_template
 from whoosh.query import And, Term
 
+
 # Create a folder for the index to be saved
 # Check if an index exists and open if possible
 
@@ -24,7 +25,7 @@ def spider(index_path="index_dir", website= "https://vm009.rz.uos.de/crawl/"):
     website: string http-link of the searched website
     """
     #Schema for index creation
-    schema = Schema(title=TEXT(stored=True), content=TEXT)
+    schema = Schema(title=TEXT(stored=True), url=ID(stored=True), content=TEXT(stored=True))
 
     # Create a folder for the index to be saved
     # Check if an index exists and open if possible
@@ -54,11 +55,11 @@ def spider(index_path="index_dir", website= "https://vm009.rz.uos.de/crawl/"):
             visited_links.add(current_url)
 
             # Add the URL and all included words to the writer of the index
-            writer.add_document(title = current_url, content = words)
+            print("title:", soup.title.string)
+            writer.add_document(title=soup.title.string, url=current_url, content=words)
             # added a print statement to follow code and it seems that "Home page" is called twice
             # even though it should be excluded due to "visited_links" check, right?
             # why does that not work?
-            print(str(soup.title))
             
 
             # Update our stack of URLS
@@ -70,6 +71,7 @@ def spider(index_path="index_dir", website= "https://vm009.rz.uos.de/crawl/"):
                 # fusing the main URL with the new href part of the link
                 if href:
                     absolute_url = urljoin(current_url, href)
+                    print("absolute URL:", absolute_url)
 
                     if absolute_url.startswith(website) and absolute_url not in visited_links:
                         queue.append(absolute_url)
@@ -83,6 +85,7 @@ def spider(index_path="index_dir", website= "https://vm009.rz.uos.de/crawl/"):
                 # fusing the main URL with the new href part of the link
                 if href:
                     absolute_url = urljoin(current_url, href)
+                    print("absolute URL:", absolute_url)
 
                     if absolute_url.startswith(website) and absolute_url not in visited_links:
                         queue.append(absolute_url)
@@ -96,6 +99,7 @@ def spider(index_path="index_dir", website= "https://vm009.rz.uos.de/crawl/"):
                 # fusing the main URL with the new href part of the link
                 if href:
                     absolute_url = urljoin(current_url, href)
+                    print("absolute URL:", absolute_url)
 
                     if absolute_url.startswith(website) and absolute_url not in visited_links:
                         queue.append(absolute_url)
@@ -117,16 +121,26 @@ def search_function(query, index_path="index_dir"):
     """
    
     ix = whoosh.index.open_dir(index_path)
+    print("index:", ix)
 
     # Create a query for each word in the list
     queries = [Term("content", word) for word in query]
 
     # Combine the queries with an AND operator (we want webpages that contain ALL of the input words)
     combined_query = And(queries)
+    print("Combined Query:", combined_query)
 
     with ix.searcher() as searcher: 
 
         results = searcher.search(combined_query)
-        hits = [hit.fields() for hit in results]
-    print(hits)
+        print("results:", results)
+        hits = [{'title': hit['title'], 'url': hit['url'], 'content': hit['content']} for hit in results]
+        print("hits:", hits)
+
+        # Iterate over all documents and print their fields
+        for doc_id in searcher.reader().all_doc_ids():
+            doc = searcher.reader().stored_fields(doc_id)
+            print("Document ID:", doc_id)
+            print("Document Fields:", doc)
+
     return hits

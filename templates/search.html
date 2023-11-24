@@ -17,20 +17,36 @@
       {% else %}
         <h1>Web pages that contain the word(s): <br>"<em>{{ query }}</em>"</h1>
       {% endif %}
+  </div>
+  <div class="list-group">
         {% if matches %}
-          <ul>{% for match in matches %}
-          <br>  
-          <li>    
-              <span style="font-weight: bold;">{{ loop.index }}.</span>
-              <a href="{{match['title']}}">{{ match['title'] }}</a>
-          </li>
-              {% endfor %}
-          </ul>
+          {% for match in matches %}
+              <a href="{{match['url']}}" class="list-group-item list-group-item-action active" aria-current="true">
+                <div class="d-flex w-100 justify-content-between">
+                  <h5> {{ match['title'] }} </h5>
+                </div>
+                <p class="mb-1">{{ match['url'] }}</p>
+                <small> 
+                    {% with start = (match['content'].find(query) - 50) | default(0) %}
+                      {% with end = (match['content'].find(query) + 50) | default(match['content']|length) %}
+                        {%with query_start = match['content'].find(query) %}
+                        {{ match['content'][start:query_start] }}
+                        <strong>{{ match['content'][query_start:(query_start + query|length)] }}</strong>
+                        {{ match['content'][(query_start + query|length):end] }}
+                      {% endwith %}
+                    {% endwith %}
+                  {% endwith %} 
+                </small>
+              </a>
+          {% endfor %}
+  </div>
+  <div class="text-container"></div>
         {% else %}
           <p style="color: #e74c3c;">Sorry, no matches were found</p>
         {% endif %}
-      </div>
-      <img src="../static/images/openbook.png">
     </div>
+  <img src="../static/images/openbook.png">
+</div>
+
 {% endblock %}
 
