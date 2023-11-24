@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 from urllib.parse import urlparse, urljoin 
 from flask import Flask, request, render_template
 from whoosh.query import And, Term
-
+from whoosh.analysis import StandardAnalyzer, LowercaseFilter
 
 # Create a folder for the index to be saved
 # Check if an index exists and open if possible
@@ -24,8 +24,13 @@ def spider(index_path="index_dir", website= "https://vm009.rz.uos.de/crawl/"):
     index_path: path of the directory where the index will be saved
     website: string http-link of the searched website
     """
+
+    # Define a custom analyzer with a lowercase filter
+    custom_analyzer = StandardAnalyzer() | LowercaseFilter()
+
+    # Define the schema with the custom analyzer for the TEXT field
     #Schema for index creation
-    schema = Schema(title=TEXT(stored=True), url=ID(stored=True), content=TEXT(stored=True))
+    schema = Schema(title=TEXT(stored=True), url=ID(stored=True), content=TEXT(stored=True, analyzer=custom_analyzer))
 
     # Create a folder for the index to be saved
     # Check if an index exists and open if possible
@@ -127,7 +132,8 @@ def search_function(query, index_path="index_dir"):
     print("index:", ix)
 
     # Create a query for each word in the list
-    queries = [Term("content", word) for word in query]
+
+    queries = [Term("content", word.lower()) for word in query]
 
     # Combine the queries with an AND operator (we want webpages that contain ALL of the input words)
     combined_query = And(queries)

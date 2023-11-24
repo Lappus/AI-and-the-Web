@@ -14,6 +14,11 @@ html {
     height: 100%;
 }
 
+a:hover {
+    color: rgb(253, 253, 253);
+    text-decoration: none;
+  }
+
 .container {
     display: flex;
     align-items: center;
@@ -60,7 +65,7 @@ html {
     color: white;
     margin-top: 0vh;
     margin-bottom: 0vh;
-    font-size: 60px;
+    font-size: 50px;
 }
 
 .navbar-btn {

@@ -26,7 +26,7 @@ def home():
 @app.route("/search", methods=["GET"])
 def search():
     # safe the query from start view
-    query = request.args.get('q')
+    query = request.args.get('q').lower()
 
     # first check if there is actually user input
     if query:
