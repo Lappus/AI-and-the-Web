@@ -14,7 +14,7 @@
             {% for search in search_history %}
             <li>
                 <span style="font-weight: bold;">{{ loop.index }}.</span>
-                <a href="#">{{ search }}</a>
+                <a href="/search?q={{ search }}">{{ search }}</a>
             </li>
             {% endfor %}
         {% else %}
