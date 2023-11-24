@@ -11,6 +11,7 @@ body {
 
 .image-container {
     background-image: url(images/openbook.png);
+    background-repeat: no-repeat;
     background-position: center;
     position: absolute;
     top: 50%;
@@ -18,7 +19,10 @@ body {
     transform: translate(-50%, -50%);
     width: 100%;
     max-width: 900px;
+    max-height: 900px;
+    margin-top: 200px;
     text-align: center;
+    overflow: auto;
 }
 
 .text-container {
@@ -30,6 +34,7 @@ body {
     padding: 20px;
     color: rgb(31, 29, 31); /* Adjust text color */
     border-right: 1px solid #ddd; /* Fine grey line separating text and list */
+    
     text-align: left;
 }
 
@@ -37,7 +42,7 @@ body {
 .list-group {
     top: 11%;
     width: 50%; /* Half the width */
-    overflow-y: auto; /* Add scrollbar if content exceeds height */
+    overflow: auto; /* Add scrollbar if content exceeds height */
     padding: 20px; /* Adjust as needed */
 }
 
