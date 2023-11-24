@@ -10,6 +10,8 @@ body {
 }
 
 .image-container {
+    background-image: url(images/openbook.png);
+    background-position: center;
     position: absolute;
     top: 50%;
     left: 50%;
@@ -23,7 +25,7 @@ body {
     position: absolute;
     max-width: 450px;
     font-size: 0.9em;
-    top: 30px;
+    top: 11%;
     left: 30px;
     padding: 20px;
     color: rgb(31, 29, 31); /* Adjust text color */
@@ -33,6 +35,7 @@ body {
 
 /* Style for the list group */
 .list-group {
+    top: 11%;
     width: 50%; /* Half the width */
     overflow-y: auto; /* Add scrollbar if content exceeds height */
     padding: 20px; /* Adjust as needed */

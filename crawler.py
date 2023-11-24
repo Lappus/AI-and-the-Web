@@ -40,6 +40,7 @@ def spider(index_path="index_dir", website= "https://vm009.rz.uos.de/crawl/"):
     writer = ix.writer()
     queue = [website]
     visited_links = set()
+    visited_links_titles = []
 
     while queue:
         # Getting the next URL to search through
@@ -49,64 +50,66 @@ def spider(index_path="index_dir", website= "https://vm009.rz.uos.de/crawl/"):
 
             request = requests.get(current_url, timeout=4).text
             soup = BeautifulSoup(request, 'html.parser')
-            # We don't need the meta data of the html, only content related text
-            words = soup.get_text()
             # Update already visited list
             visited_links.add(current_url)
+            title = soup.title.string.strip() if soup.title else None 
 
-            # Add the URL and all included words to the writer of the index
-            print("title:", soup.title.string)
-            writer.add_document(title=soup.title.string, url=current_url, content=words)
-            # added a print statement to follow code and it seems that "Home page" is called twice
-            # even though it should be excluded due to "visited_links" check, right?
-            # why does that not work?
+            if title not in visited_links_titles:
+                print("Done")
+                print("title:", title)
+                visited_links_titles.append(title)
+                            # We don't need the meta data of the html, only content related text
+                words = soup.get_text()
+                writer.add_document(title=soup.title.string, url=current_url, content=words)
+                # added a print statement to follow code and it seems that "Home page" is called twice
+                # even though it should be excluded due to "visited_links" check, right?
+                # why does that not work?
             
+                # Update our stack of URLS
+                # find the anchor elements in the html used to create hyperlinks
+                for anchor in soup.find_all('a'):
+                    # retrieving the URL that the anchor points to
+                    href = anchor.get('href')
 
-            # Update our stack of URLS
-            # find the anchor elements in the html used to create hyperlinks
-            for anchor in soup.find_all('a'):
-                # retrieving the URL that the anchor points to
-                href = anchor.get('href')
+                    # fusing the main URL with the new href part of the link
+                    if href:
+                        absolute_url = urljoin(current_url, href)
+                        print("absolute URL:", absolute_url)
 
-                # fusing the main URL with the new href part of the link
-                if href:
-                    absolute_url = urljoin(current_url, href)
-                    print("absolute URL:", absolute_url)
+                        if absolute_url.startswith(website) and absolute_url not in visited_links:
+                            queue.append(absolute_url)
+                            
+                for button in soup.find_all('button'):
 
-                    if absolute_url.startswith(website) and absolute_url not in visited_links:
-                        queue.append(absolute_url)
-                        
-            for button in soup.find_all('button'):
+                    # retrieving the URL that the button points to
+                    if button.get('href') != None:
+                        href = button.get('href')
 
-                # retrieving the URL that the button points to
-                if button.get('href') != None:
-                    href = button.get('href')
+                    # fusing the main URL with the new href part of the link
+                    if href:
+                        absolute_url = urljoin(current_url, href)
+                        print("absolute URL:", absolute_url)
 
-                # fusing the main URL with the new href part of the link
-                if href:
-                    absolute_url = urljoin(current_url, href)
-                    print("absolute URL:", absolute_url)
+                        if absolute_url.startswith(website) and absolute_url not in visited_links:
+                            queue.append(absolute_url)
 
-                    if absolute_url.startswith(website) and absolute_url not in visited_links:
-                        queue.append(absolute_url)
+                for link in soup.find_all('link'):
 
-            for link in soup.find_all('link'):
+                    # retrieving the URL that the link points to
+                    if link.get('href') != None:
+                        href = link.get('href')
 
-                # retrieving the URL that the link points to
-                if link.get('href') != None:
-                    href = link.get('href')
+                    # fusing the main URL with the new href part of the link
+                    if href:
+                        absolute_url = urljoin(current_url, href)
+                        print("absolute URL:", absolute_url)
 
-                # fusing the main URL with the new href part of the link
-                if href:
-                    absolute_url = urljoin(current_url, href)
-                    print("absolute URL:", absolute_url)
-
-                    if absolute_url.startswith(website) and absolute_url not in visited_links:
-                        queue.append(absolute_url)
-
-            
+                        if absolute_url.startswith(website) and absolute_url not in visited_links:
+                                queue.append(absolute_url)
+                                  
 
     writer.commit()
+
 
 # -----------------------------------------  Search function   -----------------------------------------
 
