@@ -16,3 +16,7 @@
    - search history output needs to be adapted!! I am so over css, is there a way to write a main css from which the other ones inheret? the current code is so redundant
    - search history css needs to be adapted so it looks pretty, but I am tired now und hab kein Bock mehr:) 
    - how can we put the .css files into the css folder within static in a way that it still finds them?
+
+4. Update(24.11)
+   - solved the problem of title repetition in results
+   - we should adjust the css code so different sizes of screens have different propotions of items and text
