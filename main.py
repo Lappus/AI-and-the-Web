@@ -20,7 +20,7 @@ search_history = []
 # creates the first view, a start page where user can input query
 @app.route("/", methods=["GET"])
 def home():
-    return render_template("home.html")
+    return render_template("home.html", text_field="Search anything")
 
 # creates the second view, a result page with the corresponding matches to query
 @app.route("/search", methods=["GET"])
@@ -56,7 +56,7 @@ def search():
         return render_template("search.html", matches=matches, query=query, suggestions=suggestions, misspelled=misspelled)
     
     else:
-        return "Please enter a query."
+        return render_template("home.html", text_field="No query detected :(" )
 
 # creates a third view, that shows the search history    
 @app.route("/history", methods=["GET"])
