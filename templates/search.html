@@ -17,8 +17,8 @@
       {% else %}
         <h1>Web pages that contain the word(s): <br>"<em>{{ query }}</em>"</h1>
       {% endif %}
-  </div>
-  <div class="list-group">
+  
+    <div class="list-group">
         {% if matches %}
           {% for match in matches %}
               <a href="{{match['url']}}" class="list-group-item list-group-item-action active" aria-current="true">
@@ -39,6 +39,7 @@
                 </small>
               </a>
           {% endfor %}
+    </div>
   </div>
   <div class="text-container"></div>
         {% else %}

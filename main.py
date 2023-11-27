@@ -52,7 +52,7 @@ def search():
         else:
             #print("q.v", query.split(), type(query.split()))
             # if there are no misspelled words, we just pass the original query
-            matches = crawler.search_function(query=query.split(", "))
+            matches = crawler.search_function(query=re.split(', |\s', query))
         print("match:", matches)
         return render_template("search.html", matches=matches, query=query, suggestions=suggestions, misspelled=misspelled)
     
