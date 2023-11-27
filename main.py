@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template
 import crawler
-from spellchecker import SpellChecker 
+from spellchecker import SpellChecker
+import re
 
 # ------------------------------------------- Initialize whoosh Index with first URL --------------------------------
 
@@ -34,8 +35,8 @@ def search():
         print("query:",query)
         # Check for potential typos and get suggestions
         suggestions = {}
-        misspelled = spell.unknown(query.split(", "))
-        correctly_spelled = spell.known(query.split(", "))
+        misspelled = spell.unknown(re.split(', |\s', query))
+        correctly_spelled = spell.known(re.split(', |\s', query))
         #print("misspelled:",misspelled, type(misspelled))
         #print("coorect:",correctly_spelled, type(correctly_spelled))
         if misspelled:
