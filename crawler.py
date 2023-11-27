@@ -36,6 +36,7 @@ def spider(index_path="index_dir", website= "https://vm009.rz.uos.de/crawl/"):
     # Check if an index exists and open if possible
     if whoosh.index.exists_in(index_path):
          ix = whoosh.index.open_dir(index_path)
+         return
     else:
         os.mkdir(index_path)
         ix = whoosh.index.create_in(index_path, schema)
