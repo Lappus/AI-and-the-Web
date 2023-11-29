@@ -70,3 +70,8 @@ def search_h():
 
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)
+
+import traceback
+@app.errorhandler(500)
+def internal_error(exception):
+   return "<pre>"+traceback.format_exc()+"</pre>"
