@@ -3,3 +3,4 @@ numpy
 beautifulsoup4
 flask
 whoosh
+spellchecker

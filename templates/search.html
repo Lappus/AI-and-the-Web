@@ -4,41 +4,41 @@
 
 
 {% block title %}
-<h1>Brainy Search</h1>
+<h1>Brainy-Search</h1>
 {% endblock %}
 
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='search.css')}}"/>
-
-<div class="image-container">
-  <div class="text-container">
-      {% if suggestions %}
-        <h1>Did you mean <em>{{ suggestions }}</em> instead of <br><em>{{misspelled}}</em>?<br><br> Here are results for {{ query }}: </h1>
-      {% else %}
-        <h1>Web pages that contain the word(s): <br>"<em>{{ query }}</em>"</h1>
-      {% endif %}
-  
-    <div class="list-group">
-        {% if matches %}
-          {% for match in matches %}
-              <a href="{{match['url']}}" class="list-group-item list-group-item-action active" aria-current="true">
-                <div class="d-flex w-100 justify-content-between">
-                  <h5> {{ match['title'] }} </h5>
-                </div>
-                <p class="mb-1">{{ match['url'] }}</p>
-                <small> 
-                    {% with start = (match['content'].find(query) - 50) | default(0) %}
-                      {% with end = (match['content'].find(query) + 50) | default(match['content']|length) %}
-                        {%with query_start = match['content'].find(query) %}
-                        {{ match['content'][start:query_start] }}
-                        <strong>{{ match['content'][query_start:(query_start + query|length)] }}</strong>
-                        {{ match['content'][(query_start + query|length):end] }}
+  <div class="image-container">
+    <div class="text-container">
+        {% if suggestions %}
+          <h1>Did you mean <em>{{ suggestions }}</em> instead of <br><em>{{misspelled}}</em>?<br><br> Here are results for {{ query }}: </h1>
+        {% else %}
+          <h1>Web pages that contain the word(s): <br>"<em>{{ query }}</em>"</h1>
+        {% endif %}
+    
+      <div class="list-group">
+          {% if matches %}
+            {% for match in matches %}
+                <a href="{{match['url']}}" class="list-group-item list-group-item-action active" aria-current="true">
+                  <div class="d-flex w-100 justify-content-between">
+                    <h5> {{ match['title'] }} </h5>
+                  </div>
+                  <p class="mb-1">{{ match['url'] }}</p>
+                  <small> 
+                      {% with start = (match['content'].find(query) - 50) | default(0) %}
+                        {% with end = (match['content'].find(query) + 50) | default(match['content']|length) %}
+                          {%with query_start = match['content'].find(query) %}
+                          {{ match['content'][start:query_start] }}
+                          <strong>{{ match['content'][query_start:(query_start + query|length)] }}</strong>
+                          {{ match['content'][(query_start + query|length):end] }}
+                        {% endwith %}
                       {% endwith %}
-                    {% endwith %}
-                  {% endwith %} 
-                </small>
-              </a>
-          {% endfor %}
+                    {% endwith %} 
+                  </small>
+                </a>
+            {% endfor %}
+      </div>
     </div>
   </div>
   <div class="text-container"></div>

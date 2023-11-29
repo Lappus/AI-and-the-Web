@@ -15,8 +15,10 @@
 
         <!-- Branding -->
         <a class="nav-item nav-link navbar-btn" id="home" href="/">
-            <img src="../static/images/brain.png" width="40" height="40" class="mr-2" href="/">
-          Brainy-Browse
+            <div class="logo-container">
+              <img src="../static/images/brain.png" width="40" height="40" class="mr-2">
+              <span class="title"> {% block title %} {% endblock %} </span>  
+            </div>
         </a>
 
         <!-- Navbar Toggle Button -->
