@@ -64,12 +64,9 @@ def spider(index_path="index_dir", website= "https://vm009.rz.uos.de/crawl/"):
                 print("Done")
                 print("title:", title)
                 visited_links_titles.append(title)
-                            # We don't need the meta data of the html, only content related text
+                # We don't need the meta data of the html, only content related text
                 words = soup.get_text()
                 writer.add_document(title=soup.title.string, url=current_url, content=words)
-                # added a print statement to follow code and it seems that "Home page" is called twice
-                # even though it should be excluded due to "visited_links" check, right?
-                # why does that not work?
             
                 # Update our stack of URLS
                 # find the anchor elements in the html used to create hyperlinks
@@ -84,7 +81,7 @@ def spider(index_path="index_dir", website= "https://vm009.rz.uos.de/crawl/"):
 
                         if absolute_url.startswith(website) and absolute_url not in visited_links:
                             queue.append(absolute_url)
-                            
+                # find the button elements in the html used to create hyperlinks           
                 for button in soup.find_all('button'):
 
                     # retrieving the URL that the button points to
@@ -98,7 +95,7 @@ def spider(index_path="index_dir", website= "https://vm009.rz.uos.de/crawl/"):
 
                         if absolute_url.startswith(website) and absolute_url not in visited_links:
                             queue.append(absolute_url)
-
+                # find the link elements in the html used to create hyperlinks
                 for link in soup.find_all('link'):
 
                     # retrieving the URL that the link points to
@@ -140,6 +137,7 @@ def search_function(query, index_path="index_dir"):
     combined_query = And(queries)
     print("Combined Query:", combined_query)
 
+    # Search the index and create a hits object that contains all information in an accessible way
     with ix.searcher() as searcher: 
 
         results = searcher.search(combined_query)
