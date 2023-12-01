@@ -37,23 +37,38 @@ def search():
         suggestions = {}
         misspelled = spell.unknown(re.split(', |\s', query))
         correctly_spelled = spell.known(re.split(', |\s', query))
-        #print("misspelled:",misspelled, type(misspelled))
-        #print("coorect:",correctly_spelled, type(correctly_spelled))
+        print("misspelled:",misspelled, type(misspelled))
+        print("coorect:",correctly_spelled, type(correctly_spelled))
         if misspelled:
             suggestions = {spell.correction(word) for word in misspelled}
-            #print("suggest",type(suggestions))
+            print("suggest")
+            print(suggestions)
             
-            query = list(suggestions.union(correctly_spelled))
+            if correctly_spelled and (not bool(suggestions)):
+                print("1")
+                query = list(suggestions.union(correctly_spelled))
+                print(query)
+            elif (bool(suggestions)):
+                print("2")
+                print(suggestions)
+                query = " ".join(suggestions)+" " + " ".join(correctly_spelled)
+            elif correctly_spelled:
+                print("3")
+                print(correctly_spelled)
+                query = " ".join(correctly_spelled)
+                print(query)
             #print("n.q", query, type(query))
             # get the matching websites to the query 
             # if there are misspelled words, we pass the corrected suggestions
-            matches = crawler.search_function(query=list(query))
+            print("matches query:", query)
+            matches = crawler.search_function(query=re.split(', |\s', query))
+            print("match1:", matches)
             #return render_template("search.html", matches=matches, query=query, suggestions=suggestions)
         else:
             #print("q.v", query.split(), type(query.split()))
             # if there are no misspelled words, we just pass the original query
             matches = crawler.search_function(query=re.split(', |\s', query))
-        print("match:", matches)
+            print("match2:", matches)
         return render_template("search.html", matches=matches, query=query, suggestions=suggestions, misspelled=misspelled)
     
     else:
