@@ -23,7 +23,12 @@ body {
     margin-top: 100px;
     margin-bottom: 100px;
     text-align: center;
+}
+
+.list-group {
     overflow: auto;
+    max-height: 75%;
+
 }
 
 .image-container::before {
@@ -46,7 +51,6 @@ body {
     max-width: 450px;
     height: 100%;
     font-size: 0.9em;
-    top: 11%;
     left: 30px;
     padding: 20px;
     color: rgb(31, 29, 31); /* Adjust text color */
