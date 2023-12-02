@@ -42,16 +42,23 @@ def search():
         # get the matching websites to the query 
         if misspelled:
             suggestions = {spell.correction(word) for word in misspelled}
-
+            print("suggestion")
+            print(suggestions)
+            #case where there are correctly spelled words and incorrectly spelled worcs where there is no suggestion
             if correctly_spelled and (not bool(suggestions)):
                 query = list(suggestions.union(correctly_spelled))
-    
-            elif (bool(suggestions)):
-                query = " ".join(suggestions)+" " + " ".join(correctly_spelled)
-
+                print("correctly spelled1")
+                print(correctly_spelled)
+            #case where there are suggestions
+            elif (bool(suggestions) and (not correctly_spelled)):
+                query = " ".join(suggestions)
+                print(query)
+                print("query")
+            #chase where there are also correctly spelled words
             elif correctly_spelled:
                 query = " ".join(correctly_spelled)
-
+                print("correctly spelled1")
+                print(correctly_spelled)
             matches = crawler.search_function(query=re.split(', |\s', query))
             
         else:
