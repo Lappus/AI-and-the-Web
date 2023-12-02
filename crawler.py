@@ -127,30 +127,17 @@ def search_function(query, index_path="index_dir"):
     """
    
     ix = whoosh.index.open_dir(index_path)
-    #print("index:", ix)
 
     # Create a query for each word in the list
-
     queries = [Term("content", word.lower()) for word in query]
 
     # Combine the queries with an AND operator (we want webpages that contain ALL of the input words)
     combined_query = And(queries)
-    #print("Combined Query:", combined_query)
 
     # Search the index and create a hits object that contains all information in an accessible way
     with ix.searcher() as searcher: 
 
         results = searcher.search(combined_query)
-        #print("results:", results)
         hits = [{'title': hit['title'], 'url': hit['url'], 'content': hit['content']} for hit in results]
-        for hit in hits:
-            print(f"Type of hits['url']: {type(hit['url'])}")
-            #print("hits:", hits)
-
-        # Iterate over all documents and print their fields
-        for doc_id in searcher.reader().all_doc_ids():
-            doc = searcher.reader().stored_fields(doc_id)
-            #print("Document ID:", doc_id)
-            #print("Document Fields:", doc)
 
     return hits

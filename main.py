@@ -36,24 +36,23 @@ def search():
         suggestions = {}
         misspelled = spell.unknown(re.split(r', |\s', query))
         correctly_spelled = spell.known(re.split(r', |\s', query))
-        #print("misspelled:",misspelled, type(misspelled))
-        #print("coorect:",correctly_spelled, type(correctly_spelled))
+
         if misspelled:
+            # save corrected words
             suggestions = {spell.correction(word) for word in misspelled}
-            #print("suggest",type(suggestions))
             
+            # get a new query with no typos
             query = list(suggestions.union(correctly_spelled))
-            #print("n.q", query, type(query))
+
             # get the matching websites to the query 
             # if there are misspelled words, we pass the corrected suggestions
-            matches = crawler.search_function(query=list(query))
-            #return render_template("search.html", matches=matches, query=query, suggestions=suggestions)
+            matches = crawler.search_function(query=query)
         else:
             # if there are no misspelled words, we just pass the original query
             matches = crawler.search_function(query=re.split(r', |\s', query))
-        print("match:", matches)
+
         return render_template("search.html", matches=matches, query=str(query).replace('[\'', '').replace('\']', ''), suggestions=suggestions, misspelled=misspelled)
-     # if there is no query at all
+    # if there is no query at all
     else:
         return render_template("home.html", text_field="No query detected :(" )
 
