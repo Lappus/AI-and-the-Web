@@ -34,30 +34,25 @@ def search():
 
         # Check for potential typos and get suggestions
         suggestions = {}
-        misspelled = spell.unknown(re.split(', |\s', query))
-        correctly_spelled = spell.known(re.split(', |\s', query))
-        
-        # search for the right terms depending on the combination of correctly spelled words,
-        # incorrectly spelled words and available suggestions
-        # get the matching websites to the query 
+        misspelled = spell.unknown(re.split(r', |\s', query))
+        correctly_spelled = spell.known(re.split(r', |\s', query))
+        #print("misspelled:",misspelled, type(misspelled))
+        #print("coorect:",correctly_spelled, type(correctly_spelled))
         if misspelled:
             suggestions = {spell.correction(word) for word in misspelled}
-
-            if correctly_spelled and (not bool(suggestions)):
-                query = list(suggestions.union(correctly_spelled))
-    
-            elif (bool(suggestions)):
-                query = " ".join(suggestions)+" " + " ".join(correctly_spelled)
-
-            elif correctly_spelled:
-                query = " ".join(correctly_spelled)
-
-            matches = crawler.search_function(query=re.split(', |\s', query))
+            #print("suggest",type(suggestions))
             
+            query = list(suggestions.union(correctly_spelled))
+            #print("n.q", query, type(query))
+            # get the matching websites to the query 
+            # if there are misspelled words, we pass the corrected suggestions
+            matches = crawler.search_function(query=list(query))
+            #return render_template("search.html", matches=matches, query=query, suggestions=suggestions)
         else:
             # if there are no misspelled words, we just pass the original query
-            matches = crawler.search_function(query=re.split(', |\s', query))
-        return render_template("search.html", matches=matches, query=query, suggestions=suggestions, misspelled=misspelled)
+            matches = crawler.search_function(query=re.split(r', |\s', query))
+        print("match:", matches)
+        return render_template("search.html", matches=matches, query=str(query).replace('[\'', '').replace('\']', ''), suggestions=suggestions, misspelled=misspelled)
      # if there is no query at all
     else:
         return render_template("home.html", text_field="No query detected :(" )
