@@ -34,3 +34,15 @@ class MovieGenre(db.Model):
     movie_id = db.Column(db.Integer, db.ForeignKey('movies.id'), nullable=False)
     genre = db.Column(db.String(255), nullable=False, server_default='')
 
+class Link(db.Model):
+    __tablename__ = 'links'
+    movie_id = db.Column(db.Integer, db.ForeignKey('movies.id'), primary_key=True, nullable=False)
+    imdb_id = db.Column(db.Integer,  nullable=False)
+    tmdb_id = db.Column(db.Integer,  nullable=False)
+    
+class Tag(db.Model):
+    __tablename__ = 'tags'
+    user_id = db.Column(db.Integer, db.ForeignKey('movies.id'), primary_key=True,  nullable=False)
+    movie_id = db.Column(db.Integer, db.ForeignKey('users.id'),  nullable=False)
+    tag = db.Column(db.String(255),  nullable=False)
+    timestamp = db.Column(db.Integer, primary_key=True,  nullable=False)

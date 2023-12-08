@@ -1,6 +1,6 @@
 import csv
 from sqlalchemy.exc import IntegrityError
-from models import Movie, MovieGenre
+from models import Movie, MovieGenre, Link, Tag
 
 def check_and_read_data(db):
     # check if we have movies in the database
@@ -29,4 +29,50 @@ def check_and_read_data(db):
                 count += 1
                 if count % 100 == 0:
                     print(count, " movies read")
+
+    if Link.query.count() == 0:
+        # read movies from csv
+        with open('data/links.csv', newline='', encoding='utf8') as csvfile:
+            reader = csv.reader(csvfile, delimiter=',')
+            count = 0
+            for row in reader:
+                if count > 0:
+                    try:
+                        movie_id = row[0]
+                        imdb_id = row[1]
+                        tmdb_id = row[2]
+                        link = Link(movie_id = movie_id, imdb_id= imdb_id, tmdb_id =tmdb_id)
+                        db.session.add(link)
+                        db.session.commit()
+                    except IntegrityError:
+                        print("Ignoring duplicate link: " + movie_id)
+                        db.session.rollback()
+                        pass
+                count += 1
+                if count % 100 == 0:
+                    print(count, " links read")
+
+    if Tag.query.count() == 0:
+        # read movies from csv
+        with open('data/tags.csv', newline='', encoding='utf8') as csvfile:
+            reader = csv.reader(csvfile, delimiter=',')
+            count = 0
+            for row in reader:
+                if count > 0:
+                    try:
+                        user_id = row[0]
+                        movie_id = row[1]
+                        tag = row[2]
+                        timestamp = row[3]
+                        tag = Tag(user_id = user_id, movie_id= movie_id, tag= tag, timestamp=timestamp)
+                        db.session.add(tag)
+                        db.session.commit()
+                    except IntegrityError:
+                        print("Ignoring duplicate tag: " + user_id + " " + movie_id)
+                        db.session.rollback()
+                        pass
+                count += 1
+                if count % 100 == 0:
+                    print(count, " tags read")
+
 
