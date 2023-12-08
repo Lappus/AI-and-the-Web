@@ -56,20 +56,21 @@ def movies_page():
     movies = Movie.query.limit(10).all()
     # only Romance movies
     # movies = Movie.query.filter(Movie.genres.any(MovieGenre.genre == 'Romance')).limit(10).all()
-    tags = list()
+    tags = {}
     for movie in movies:
-        tags = tags.append(Tag.query.filter(Tag.movie_id.any(Movie.id == movie.id ))).limit(10).all()
+        tags.update({movie.id : Tag.query.filter_by(movie_id= movie.id ).limit(10).all()})
+    print(tags)
 
-    links = list()
+    links = {}
     for movie in movies:
-        links = links.append(Link.query.filter(Link.movie_id.any(Movie.id == movie.id))).limit(10).all()   
+        links.update({movie.id : Link.query.filter_by(movie_id= movie.id ).limit(10).all()})
     # only Romance AND Horror movies
     # movies = Movie.query\
     #     .filter(Movie.genres.any(MovieGenre.genre == 'Romance')) \
     #     .filter(Movie.genres.any(MovieGenre.genre == 'Horror')) \
     #     .limit(10).all()
 
-    return render_template("movies.html", movies=movies, tags = tags, links=links)
+    return render_template("movies.html", movies=movies, tags=tags, links=links)
 
 
 # Start development web server

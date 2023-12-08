@@ -12,6 +12,37 @@
                         <span class="label label-default">{{ g.genre }}</span>
                     {% endfor %}
                 </p>
+                <p>
+                    {% for movieId, tag in tags.items() %}
+                        {% if movieId == m.id %}
+                            {% for t in tag %}
+                            <span class="label label-default">{{ t.tag }}</span>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </p>
+                <p>
+                    {% for movieId, link in links.items() %}
+                        {% if movieId == m.id %}
+                            {% for l in link %}
+                            <a class="label label-default" href ={{ "https://www.imdb.com/title/tt0" + l.imdb_id|string}}  >{{ "https://www.imdb.com/title/tt" + l.imdb_id|string }}</a>
+
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </p>
+
+                <p>
+                    {% for movieId, link in links.items() %}
+                        {% if movieId == m.id %}
+                            {% for l in link %}
+                            <a class="label label-default" href ={{ "https://www.themoviedb.org/movie/" + l.tmdb_id|string}}  >{{ "https://www.themoviedb.org/movie/" + l.tmdb|string }}</a>
+
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </p>
+
             </div>
               <div class="panel-footer">Rate:
                   <a href="#" class="card-link">1</a>
