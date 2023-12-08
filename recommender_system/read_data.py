@@ -5,6 +5,7 @@ from models import Movie, MovieGenre, Link, Tag
 def check_and_read_data(db):
     # check if we have movies in the database
     # read data if database is empty
+
     if Movie.query.count() == 0:
         # read movies from csv
         with open('data/movies.csv', newline='', encoding='utf8') as csvfile:

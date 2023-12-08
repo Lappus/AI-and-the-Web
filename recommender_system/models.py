@@ -43,6 +43,6 @@ class Link(db.Model):
 class Tag(db.Model):
     __tablename__ = 'tags'
     user_id = db.Column(db.Integer, db.ForeignKey('movies.id'), primary_key=True,  nullable=False)
-    movie_id = db.Column(db.Integer, db.ForeignKey('users.id'),  nullable=False)
-    tag = db.Column(db.String(255),  nullable=False)
+    movie_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True,  nullable=False)
+    tag = db.Column(db.String(255), primary_key=True,  nullable=False)
     timestamp = db.Column(db.Integer, primary_key=True,  nullable=False)
