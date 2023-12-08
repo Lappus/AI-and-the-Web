@@ -25,7 +25,7 @@
                     {% for movieId, link in links.items() %}
                         {% if movieId == m.id %}
                             {% for l in link %}
-                            <a class="label label-default" href ={{ "https://www.imdb.com/title/tt0" + l.imdb_id|string}}  >{{ "https://www.imdb.com/title/tt" + l.imdb_id|string }}</a>
+                            <a class="label label-default" href ={{ "https://www.imdb.com/title/tt0" + l.imdb_id|string}}  >{{ "https://www.imdb.com/title/tt0" + l.imdb_id|string }}</a>
 
                             {% endfor %}
                         {% endif %}
