@@ -1,6 +1,11 @@
 import csv
 from sqlalchemy.exc import IntegrityError
-from models import Movie, MovieGenre, Link, Tag
+from models import Movie, MovieGenre, Link, Tag, Rating
+import re
+
+
+def clean_title(title):
+    return re.sub("[^a-zA-Z0-9 ]", "", title)
 
 def check_and_read_data(db):
     # check if we have movies in the database
@@ -17,6 +22,7 @@ def check_and_read_data(db):
                         id = row[0]
                         title = row[1]
                         movie = Movie(id=id, title=title)
+                        # movie = Movie(id=id, title=title, clean_title=clean_title(title))
                         db.session.add(movie)
                         genres = row[2].split('|')  # genres is a list of genres
                         for genre in genres:  # add each genre to the movie_genre table
@@ -75,5 +81,28 @@ def check_and_read_data(db):
                 count += 1
                 if count % 100 == 0:
                     print(count, " tags read")
-
+    
+    if Rating.query.count() == 0:
+        # read Ratings from csv
+        with open('data/ratings.csv', newline='', encoding='utf8') as csvfile:
+            reader = csv.reader(csvfile, delimiter=',')
+            count = 0
+            for row in reader:
+                if count > 0:
+                    try:
+                        user_id = row[0]
+                        movie_id = row[1]
+                        rating = row[2]
+                        timestamp = row[3]
+                        rating= Rating(user_id=user_id, movie_id=movie_id, rating=rating)
+                        db.session.add(rating)
+                        db.session.commit()
+                    except IntegrityError as e:
+                        print("Error inserting rating:", e)
+                        db.session.rollback()
+                        pass
+                count += 1
+                if count % 100 == 0:
+                    print(count, " Ratings read")
+    
 

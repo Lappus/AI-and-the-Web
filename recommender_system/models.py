@@ -1,13 +1,16 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_user import UserMixin
+from sqlalchemy import Sequence
 
 db = SQLAlchemy()
 
 # Define the User data-model.
 # NB: Make sure to add flask_user UserMixin as this adds additional fields and properties required by Flask-User
+
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
-    id = db.Column(db.Integer, primary_key=True)
+    id_seq = Sequence('user_id_seq', start=620)
+    id = db.Column(db.Integer, id_seq, primary_key=True)
     active = db.Column('is_active', db.Boolean(), nullable=False, server_default='1')
 
     # User authentication information. The collation='NOCASE' is required
@@ -20,13 +23,19 @@ class User(db.Model, UserMixin):
     first_name = db.Column(db.String(100, collation='NOCASE'), nullable=False, server_default='')
     last_name = db.Column(db.String(100, collation='NOCASE'), nullable=False, server_default='')
 
+class Rating(db.Model):
+    __tablename__ = 'ratings'
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    movie_id = db.Column(db.Integer, db.ForeignKey('movies.id'), nullable=False)
+    rating = db.Column(db.Float, primary_key=True, nullable=False)
+    #timestamp = db.Column(db.Integer, primary_key=True, nullable=False)
 
 class Movie(db.Model):
     __tablename__ = 'movies'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100, collation='NOCASE'), nullable=False, unique=True)
+    # clean_title = db.Column(db.String(100, collation='NOCASE'), nullable=False, unique=True)
     genres = db.relationship('MovieGenre', backref='movie', lazy=True)
-
 
 class MovieGenre(db.Model):
     __tablename__ = 'movie_genres'
