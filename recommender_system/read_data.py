@@ -1,6 +1,6 @@
 import csv
 from sqlalchemy.exc import IntegrityError
-from models import Movie, MovieGenre, Link, Tag, Rating
+from models import Movie, MovieGenre, Link, Tag, Rating, User
 import re
 
 
@@ -36,6 +36,9 @@ def check_and_read_data(db):
                 count += 1
                 if count % 100 == 0:
                     print(count, " movies read")
+                # read only first 500 entries for testing
+                if count == 500:
+                    break
 
     if Link.query.count() == 0:
         # read movies from csv
@@ -58,6 +61,9 @@ def check_and_read_data(db):
                 count += 1
                 if count % 100 == 0:
                     print(count, " links read")
+                # read only first 500 entries for testing
+                if count == 500:
+                    break
 
     if Tag.query.count() == 0:
         # read movies from csv
@@ -81,6 +87,9 @@ def check_and_read_data(db):
                 count += 1
                 if count % 100 == 0:
                     print(count, " tags read")
+                # read only first 500 entries for testing
+                if count == 500:
+                    break
     
     if Rating.query.count() == 0:
         # read Ratings from csv
@@ -104,5 +113,32 @@ def check_and_read_data(db):
                 count += 1
                 if count % 100 == 0:
                     print(count, " Ratings read")
-    
+                # read only first 500 entries for testing
+                if count == 500:
+                    break
+
+      
+    if User.query.count() == 0:
+        # read users from csv
+        with open('data/ratings.csv', newline='', encoding='utf8') as csvfile:
+            reader = csv.reader(csvfile, delimiter=',')
+            count = 0
+            for row in reader:
+                if count > 0:
+                    try:
+                        user_id = row[0]
+                        user= User(user_id=user_id, is_active="false", username="n.a.", passwort="n.a.", email_confirmed_at=000000000, first_name="n.a.", last_name="n.a.")
+                        db.session.add(user)
+                        db.session.commit()
+                    except IntegrityError as e:
+                        print("Error inserting user:", e)
+                        db.session.rollback()
+                        pass
+                count += 1
+                if count % 100 == 0:
+                    print(count, " user read")
+                # read only first 500 entries for testing
+                if count == 500:
+                    break
+
 
