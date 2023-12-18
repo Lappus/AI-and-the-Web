@@ -1,14 +1,17 @@
 # Contains parts from: https://flask-user.readthedocs.io/en/latest/quickstart_app.html
 
-from flask import Flask, render_template
-from flask_user import login_required, UserManager
+from flask import Flask, render_template, redirect, url_for, request
+from flask_user import login_required, UserManager, current_user
 
 from models import db, User, Movie, Tag, Link, MovieGenre, Rating
 from read_data import check_and_read_data
 
 # Class-based application configuration
 class ConfigClass(object):
-    """ Flask application config """
+    """ Flask application config 
+        Defines the configuration settings for the flask application.
+        It sets the Database URI to a SQLite database file names movie_recommender.sqlite
+    """
 
     # Flask settings
     SECRET_KEY = 'This is an INSECURE secret!! DO NOT use this in production!!'
@@ -25,7 +28,7 @@ class ConfigClass(object):
 
 # Create Flask app
 app = Flask(__name__)
-app.config.from_object(__name__ + '.ConfigClass')  # configuration
+app.config.from_object(__name__ + '.ConfigClass')  # configuration of flask app using ConfigClass
 app.app_context().push()  # create an app context before initializing db
 db.init_app(app)  # initialize database
 db.create_all()  # create database if necessary
@@ -33,6 +36,7 @@ user_manager = UserManager(app, db, User)  # initialize Flask-User management
 
 
 @app.cli.command('initdb')
+# when executed it intializes the database via the check and read data function
 def initdb_command():
     global db
     """Creates the database tables."""
@@ -45,7 +49,7 @@ def home_page():
     # render home.html template
     return render_template("home.html")
 
-
+"""
 # The Members page is only accessible to authenticated users via the @login_required decorator
 @app.route('/movies')
 #@login_required  # User must be authenticated
@@ -76,7 +80,30 @@ def movies_page():
 
 
     return render_template("movies.html", movies=movies, tags=tags, links=links)
+"""
+@app.route('/movies', methods=['GET', 'POST'])
+@login_required  # User must be authenticated
+def movies_page():
+    # String-based templates
+    movies = Movie.query.limit(10).all()
+    tags = {}
+    for movie in movies:
+        tags.update({movie.id: Tag.query.filter_by(movie_id=movie.id).limit(10).all()})
+    links = {}
+    for movie in movies:
+        links.update({movie.id: Link.query.filter_by(movie_id=movie.id).limit(10).all()})
 
+    if request.method == 'POST':
+        # Handle rating submission
+        movie_id = request.form.get('movie_id')
+        rating_value = request.form.get('rating')
+        user_id = current_user.id  
+        rating = Rating(user_id=user_id, movie_id=movie_id, rating=rating_value)
+        db.session.add(rating)
+        db.session.commit()
+        return render_template('rating.html')
+
+    return render_template("movies.html", movies=movies, tags=tags, links=links)
 
 # Start development web server
 if __name__ == '__main__':

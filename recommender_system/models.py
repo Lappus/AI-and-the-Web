@@ -11,7 +11,7 @@ class User(db.Model, UserMixin):
     __tablename__ = 'users'
     id_seq = Sequence('user_id_seq', start=620)
     id = db.Column(db.Integer, id_seq, primary_key=True)
-    active = db.Column('is_active', db.Boolean(), nullable=False, server_default='1')
+    active = db.Column('is_active', db.Boolean(), nullable=False, server_default='0')
 
     # User authentication information. The collation='NOCASE' is required
     # to search case insensitively when USER_IFIND_MODE is 'nocase_collation'.
@@ -23,11 +23,17 @@ class User(db.Model, UserMixin):
     first_name = db.Column(db.String(100, collation='NOCASE'), nullable=False, server_default='')
     last_name = db.Column(db.String(100, collation='NOCASE'), nullable=False, server_default='')
 
+    # For debugging
+    def __repr__(self):
+        return f'<User: {self.username}> <ID: {self.id}> <password: {self.password}>'
+
 class Rating(db.Model):
     __tablename__ = 'ratings'
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True, nullable=False)
     movie_id = db.Column(db.Integer, db.ForeignKey('movies.id'), primary_key=True, nullable=False)
     rating = db.Column(db.Float, nullable=False)
+    # allows to navigate between User and Ratings Model
+    user = db.relationship('User', backref='ratings')
     #timestamp = db.Column(db.Integer, primary_key=True, nullable=False)
 
 class Movie(db.Model):

@@ -127,7 +127,7 @@ def check_and_read_data(db):
                 if count > 0:
                     try:
                         user_id = row[0]
-                        user= User(user_id=user_id, is_active="false", username="n.a.", passwort="n.a.", email_confirmed_at=000000000, first_name="n.a.", last_name="n.a.")
+                        user= User(user_id=user_id, is_active="false", username="n.a.", password="n.a.", email_confirmed_at=000000000, first_name="n.a.", last_name="n.a.")
                         db.session.add(user)
                         db.session.commit()
                     except IntegrityError as e:
