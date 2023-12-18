@@ -31,16 +31,19 @@ class Rating(db.Model):
     __tablename__ = 'ratings'
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True, nullable=False)
     movie_id = db.Column(db.Integer, db.ForeignKey('movies.id'), primary_key=True, nullable=False)
-    rating = db.Column(db.Float, nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
     # allows to navigate between User and Ratings Model
     user = db.relationship('User', backref='ratings')
     #timestamp = db.Column(db.Integer, primary_key=True, nullable=False)
+    # Unique constraint to prevent multiple ratings from the same user for the same movie
+    #__table_args__ = (db.UniqueConstraint('user_id', 'movie_id'), {})
 
 class Movie(db.Model):
     __tablename__ = 'movies'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100, collation='NOCASE'), nullable=False, unique=True)
     # clean_title = db.Column(db.String(100, collation='NOCASE'), nullable=False, unique=True)
+    # creates a reverse reference on "MoviesGenre" that allows you to access the Genre associated with a Movie via genre.movie
     genres = db.relationship('MovieGenre', backref='movie', lazy=True)
 
 class MovieGenre(db.Model):
@@ -57,7 +60,7 @@ class Link(db.Model):
     
 class Tag(db.Model):
     __tablename__ = 'tags'
-    user_id = db.Column(db.Integer, db.ForeignKey('movies.id'), primary_key=True,  nullable=False)
-    movie_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True,  nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True,  nullable=False)
+    movie_id = db.Column(db.Integer, db.ForeignKey('movies.id'), primary_key=True,  nullable=False)
     tag = db.Column(db.String(255), primary_key=True,  nullable=False)
     timestamp = db.Column(db.Integer, primary_key=True,  nullable=False)
