@@ -85,7 +85,6 @@ def movies_page():
 @login_required  # User must be authenticated
 def movies_page():
     # String-based templates
-    rating_value=0
     movies = Movie.query.limit(10).all()
     tags = {}
     for movie in movies:
@@ -95,27 +94,16 @@ def movies_page():
         links.update({movie.id: Link.query.filter_by(movie_id=movie.id).limit(10).all()})
 
     if request.method == 'POST':
-        # rating submissions
-        movie_id = int(request.form.get('movie_id'))
-        rating_value = int(request.form.get('rating'))
-        print(type(rating_value))
+        # Handle rating submission
+        movie_id = request.form.get('movie_id')
+        rating_value = request.form.get('rating')
         user_id = current_user.id  
-
-        # Check if the user has already rated the movie
-        existing_rating = Rating.query.filter_by(user_id=user_id, movie_id=movie_id).first()
-
-        if existing_rating:
-            # Update the existing rating
-            existing_rating.rating = rating_value
-        else:
-            # Insert a new rating
-            new_rating = Rating(user_id=user_id, movie_id=movie_id, rating=rating_value)
-            db.session.add(new_rating)
-
+        rating = Rating(user_id=user_id, movie_id=movie_id, rating=rating_value)
+        db.session.add(rating)
         db.session.commit()
         return render_template('rating.html')
 
-    return render_template("movies.html", movies=movies, tags=tags, links=links, rating=rating_value)
+    return render_template("movies.html", movies=movies, tags=tags, links=links)
 
 # Start development web server
 if __name__ == '__main__':
