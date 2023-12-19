@@ -7,7 +7,7 @@ import re
 def clean_title(title):
     return re.sub("[^a-zA-Z0-9 ]", "", title)
 
-def check_and_read_data(db):
+def check_and_read_data(db_session):
     # check if we have movies in the database
     # read data if database is empty
 
@@ -23,15 +23,15 @@ def check_and_read_data(db):
                         title = row[1]
                         movie = Movie(id=id, title=title)
                         # movie = Movie(id=id, title=title, clean_title=clean_title(title))
-                        db.session.add(movie)
+                        db_session.add(movie)
                         genres = row[2].split('|')  # genres is a list of genres
                         for genre in genres:  # add each genre to the movie_genre table
                             movie_genre = MovieGenre(movie_id=id, genre=genre)
-                            db.session.add(movie_genre)
-                        db.session.commit()  # save data to database
+                            db_session.add(movie_genre)
+                        db_session.commit()  # save data to database
                     except IntegrityError:
                         print("Ignoring duplicate movie: " + title)
-                        db.session.rollback()
+                        db_session.rollback()
                         pass
                 count += 1
                 if count % 100 == 0:
@@ -52,11 +52,11 @@ def check_and_read_data(db):
                         imdb_id = row[1]
                         tmdb_id = row[2]
                         link = Link(movie_id = movie_id, imdb_id= imdb_id, tmdb_id =tmdb_id)
-                        db.session.add(link)
-                        db.session.commit()
+                        db_session.add(link)
+                        db_session.commit()
                     except IntegrityError:
                         print("Ignoring duplicate link: " + movie_id)
-                        db.session.rollback()
+                        db_session.rollback()
                         pass
                 count += 1
                 if count % 100 == 0:
@@ -78,11 +78,11 @@ def check_and_read_data(db):
                         tag = row[2]
                         timestamp = row[3]
                         tag = Tag(user_id = user_id, movie_id= movie_id, tag= tag, timestamp=timestamp)
-                        db.session.add(tag)
-                        db.session.commit()
+                        db_session.add(tag)
+                        db_session.commit()
                     except IntegrityError:
                         print("Ignoring duplicate tag: " + user_id + " " + movie_id)
-                        db.session.rollback()
+                        db_session.rollback()
                         pass
                 count += 1
                 if count % 100 == 0:
@@ -104,11 +104,11 @@ def check_and_read_data(db):
                         rating = row[2]
                         timestamp = row[3]
                         rating= Rating(user_id=user_id, movie_id=movie_id, rating=rating)
-                        db.session.add(rating)
-                        db.session.commit()
+                        db_session.add(rating)
+                        db_session.commit()
                     except IntegrityError as e:
                         print("Error inserting rating:", e)
-                        db.session.rollback()
+                        db_session.rollback()
                         pass
                 count += 1
                 if count % 100 == 0:
@@ -127,16 +127,20 @@ def check_and_read_data(db):
                 if count > 0:
                     try:
                         user_id = row[0]
-                        user= User(user_id=user_id, is_active="false", username="n.a.", password="n.a.", email_confirmed_at=000000000, first_name="n.a.", last_name="n.a.")
-                        db.session.add(user)
-                        db.session.commit()
+                        # Check if the user with the given ID already exists
+                        existing_user = User.query.filter_by(username=user_id).first()
+
+                        if not existing_user:
+                            user = User(active=False, username=user_id, password="n.a.")
+                            db_session.add(user)
+                            db_session.commit()
                     except IntegrityError as e:
                         print("Error inserting user:", e)
-                        db.session.rollback()
+                        db_session.rollback()
                         pass
                 count += 1
                 if count % 100 == 0:
-                    print(count, " user read")
+                    print(count, "user read")
                 # read only first 500 entries for testing
                 if count == 500:
                     break

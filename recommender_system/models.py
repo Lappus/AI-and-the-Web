@@ -20,12 +20,12 @@ class User(db.Model, UserMixin):
     email_confirmed_at = db.Column(db.DateTime())
 
     # User information
-    first_name = db.Column(db.String(100, collation='NOCASE'), nullable=False, server_default='')
-    last_name = db.Column(db.String(100, collation='NOCASE'), nullable=False, server_default='')
+    first_name = db.Column(db.String(100, collation='NOCASE'), server_default='')
+    last_name = db.Column(db.String(100, collation='NOCASE'), server_default='')
 
     # For debugging
-    def __repr__(self):
-        return f'<User: {self.username}> <ID: {self.id}> <password: {self.password}>'
+    #def __repr__(self):
+    #    return f'<User: {self.username}> <ID: {self.id}> <password: {self.password}>'
 
 class Rating(db.Model):
     __tablename__ = 'ratings'

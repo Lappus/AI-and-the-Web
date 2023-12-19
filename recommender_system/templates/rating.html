@@ -4,7 +4,7 @@
 {% block content %}
     <div class="container">
         <h2>Rating Submitted Successfully</h2>
-        <p>Your rating has been successfully submitted. Thank you!</p>
+        <p>Your rating of {{rating_value}} star(s) for the movie {{title}} has been successfully submitted. Thank you!</p>
         <a href="{{ url_for('movies_page') }}" class="btn btn-primary">Go back to Movies</a>
     </div>
 {% endblock %}
