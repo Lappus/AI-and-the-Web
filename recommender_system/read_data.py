@@ -37,7 +37,7 @@ def check_and_read_data(db):
                 if count % 100 == 0:
                     print(count, " movies read")
                 # read only first 500 entries for testing
-                if count == 500:
+                if count == 100:
                     break
 
     if Link.query.count() == 0:
@@ -62,7 +62,7 @@ def check_and_read_data(db):
                 if count % 100 == 0:
                     print(count, " links read")
                 # read only first 500 entries for testing
-                if count == 500:
+                if count == 100:
                     break
 
     if Tag.query.count() == 0:
@@ -88,7 +88,7 @@ def check_and_read_data(db):
                 if count % 100 == 0:
                     print(count, " tags read")
                 # read only first 500 entries for testing
-                if count == 500:
+                if count == 100:
                     break
     
     if Rating.query.count() == 0:
@@ -114,7 +114,7 @@ def check_and_read_data(db):
                 if count % 100 == 0:
                     print(count, " Ratings read")
                 # read only first 500 entries for testing
-                if count == 500:
+                if count == 100:
                     break
 
       
@@ -126,10 +126,11 @@ def check_and_read_data(db):
             for row in reader:
                 if count > 0:
                     try:
-                        user_id = row[0]
-                        user= User(user_id=user_id, is_active="false", username="n.a.", password="n.a.", email_confirmed_at=000000000, first_name="n.a.", last_name="n.a.")
+                        id = int(row[0])
+                        user= User(active=False, username="olduser" + str(count))
                         db.session.add(user)
                         db.session.commit()
+                        
                     except IntegrityError as e:
                         print("Error inserting user:", e)
                         db.session.rollback()
@@ -138,7 +139,7 @@ def check_and_read_data(db):
                 if count % 100 == 0:
                     print(count, " user read")
                 # read only first 500 entries for testing
-                if count == 500:
+                if count == 100:
                     break
 
 
