@@ -37,7 +37,7 @@ def check_and_read_data(db_session):
                 if count % 100 == 0:
                     print(count, " movies read")
                 # read only first 500 entries for testing
-                if count == 500:
+                if count == 100:
                     break
 
     if Link.query.count() == 0:
@@ -62,7 +62,7 @@ def check_and_read_data(db_session):
                 if count % 100 == 0:
                     print(count, " links read")
                 # read only first 500 entries for testing
-                if count == 500:
+                if count == 100:
                     break
 
     if Tag.query.count() == 0:
@@ -88,7 +88,7 @@ def check_and_read_data(db_session):
                 if count % 100 == 0:
                     print(count, " tags read")
                 # read only first 500 entries for testing
-                if count == 500:
+                if count == 100:
                     break
     
     if Rating.query.count() == 0:
@@ -114,7 +114,7 @@ def check_and_read_data(db_session):
                 if count % 100 == 0:
                     print(count, " Ratings read")
                 # read only first 500 entries for testing
-                if count == 500:
+                if count == 100:
                     break
 
       
@@ -142,7 +142,7 @@ def check_and_read_data(db_session):
                 if count % 100 == 0:
                     print(count, "user read")
                 # read only first 500 entries for testing
-                if count == 500:
+                if count == 100:
                     break
 
 

@@ -1,38 +1,51 @@
-
 from surprise import Dataset
 from surprise import Reader
 from surprise.model_selection import train_test_split
 from surprise import KNNWithMeans
-from models import db, User, Movie, Tag, Link, MovieGenre, Rating
+import pandas as pd
 
-# Assuming you have a User model with a relationship named 'ratings'
-# and a Rating model with columns 'user_id', 'movie_id', and 'rating'
+from models import db, User, Movie, Tag, Link, MovieGenre, Rating    
 
-# Load your SQLAlchemy models
-users = User.query.all()
-ratings = Rating.query.all()
+def recommended(data, unrated_movies, your_user_id):
+# Split the data into training and testing sets - right now I only work with the training set
+    trainset, testset = train_test_split(data, test_size=0.05)
 
-# Create a Surprise Reader
-reader = Reader(rating_scale=(1, 5))
+    # Use user-based collaborative filtering with KNNWithMeans
+    sim_options = {
+        "name": "cosine",
+        "user_based": True,  #User-based similarity
+        "random_state": 42       #specific random seed for reproducibility
+    }
+    algo = KNNWithMeans(sim_options=sim_options)
 
-# Load the dataset from SQLAlchemy models
-data = Dataset.load_from_df([(r.user_id, r.movie_id, r.rating) for r in ratings], reader)
+    # Train the algorithm on the training set
+    algo.fit(trainset)
 
-# Split the data into training and testing sets
-trainset, testset = train_test_split(data, test_size=0.25)
+    similar_users = algo.get_neighbors(your_user_id, k=3)  # Get 3 similar users
 
-# Use user-based collaborative filtering with KNNWithMeans
-sim_options = {
-    "name": "cosine",
-    "user_based": True,  # User-based similarity
-}
-algo = KNNWithMeans(sim_options=sim_options)
+    # Get the similarity scores between the target user and other users
+    similarity_scores = algo.sim[:, your_user_id]
 
-# Train the algorithm on the training set
-algo.fit(trainset)
+    predictions = {}
+    for movie in unrated_movies:
+        # Calculate the weighted average prediction for the movie
+        weighted_sum = 0
+        similarity_sum = 0
 
-# Replace 'your_user_id' with the ID of the user for whom you want to find similar users
-your_user_id = 1  # Example user ID
-similar_users = algo.get_neighbors(your_user_id, k=3)  # Get 5 similar users
+        for similar_user, similarity in zip(similar_users, similarity_scores):
+            # Get the rating of the similar user for the movie
+            rating = algo.trainset.ur[similar_user]
+            rating = next((r[1] for r in rating if r[0] == movie.id), None)
 
-print(f"Users similar to User {your_user_id}: {similar_users}")
+            if rating is not None:
+                # Update the weighted sum and similarity sum
+                weighted_sum += similarity * rating
+                similarity_sum += abs(similarity)
+
+        # Avoid division by zero
+        if similarity_sum != 0:
+            # Calculate the predicted rating
+            predicted_rating = weighted_sum / similarity_sum
+            predictions[movie.id] = predicted_rating
+    
+    return similar_users, predictions

@@ -1,0 +1,10 @@
+<!-- recommendations.html -->
+
+{% extends "flask_user_layout.html" %}
+{% block content %}
+    <div class="container">
+        <h2>Your recommendations! </h2>
+        <p>Users similar to you (your id: {{your_user_id}}): {{similar_users}}. Your top movies with respective estimated rating: {{top_movies}}</p>
+        <a href="{{ url_for('recommendations') }}" class="btn btn-primary"> Recalculate best matches </a>
+    </div>
+{% endblock %}
