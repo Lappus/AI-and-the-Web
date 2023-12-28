@@ -1,0 +1,73 @@
+/* General container styling */
+.container {
+    padding: 20px;
+}
+
+/* Styling for the movie panels */
+.panel {
+    background-color: #f8f9fa; /* Light background for panels */
+    border: 1px solid #ddd; /* Border for panels */
+    border-radius: 4px; /* Rounded corners */
+    margin-bottom: 20px; /* Space between panels */
+}
+
+.panel-heading {
+    background-color: #e9ecef; /* Slightly darker background for headings */
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    font-size: 1.2em; /* Larger font for movie titles */
+    font-weight: bold; /* Bold font for emphasis */
+    color: #867a89;
+}
+
+.panel-body {
+    padding: 15px;
+}
+
+/* Styling for genre and tag labels */
+.label {
+    display: inline-block;
+    background-color: #998e9b; /* Default Bootstrap label color */
+    color: #faf8f8; /* White text for labels */
+    padding: 3px 6px;
+    margin-right: 5px; /* Space between labels */
+    border-radius: 2px; /* Rounded corners for labels */
+}
+
+/* Styling for movie links */
+.panel-body a {
+    color: #007bff; /* Bootstrap primary link color */
+    text-decoration: none; /* No underline */
+}
+
+.panel-body a:hover {
+    text-decoration: underline; /* Underline on hover */
+}
+
+/* Styling for the rating buttons */
+.card-link.btn {
+    color: #442e4b; /* Bootstrap primary button text color */
+    background-color: transparent;
+    border: none;
+    padding: 5px 3px;
+}
+
+.card-link.btn:hover {
+    background-color: #e9ecef; /* Slight background on hover */
+}
+
+/* Footer with rating buttons */
+.panel-footer {
+    background-color: #e9ecef;
+    padding: 10px;
+    text-align: center; /* Center align the rating buttons */
+    display: flex; /* Use Flexbox */
+    justify-content: center; /* Horizontally center the items */
+    flex-wrap: wrap; /* Allow the items to wrap if necessary */
+    font-weight: bold; /* Bold font for emphasis */
+    color: #867a89;
+}
+
+.panel-footer form {
+    margin: 0 5px; /* Add some space between the buttons */
+}

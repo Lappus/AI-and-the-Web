@@ -1,0 +1,58 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex !important;
+    flex-direction: column;
+    min-height: 100vh;
+    background: #fff;
+    font-family: 'Raleway', sans-serif;
+}
+
+.banner {
+    height: auto; /* Changed from 100vh to auto */
+    min-height: 100vh; /* Ensure banner is at least as tall as the viewport */
+    width: 100%;
+    background: url("../static/images/overlay.png"), url("../static/images/outer_space.jpg");
+    background-position: top;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.banner .navbar {
+    margin-top: 4%;
+}
+
+.banner .navbar-brand {
+    color: #fff;
+    font-size: 1.8em;
+    font-weight: 700;
+    margin-left: 10%;
+}
+
+.banner .nav {
+    margin-right: 10%;
+}
+
+.banner .nav li a {
+    color: #aaa;
+    font-size: 1.2em;
+}
+
+#main-div {
+    flex-grow: 1;
+    color: #bdbbbd; 
+    width: 100%;
+}
+
+#footer-div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #210b26;
+    color: #fff;
+    padding: 10px;
+}

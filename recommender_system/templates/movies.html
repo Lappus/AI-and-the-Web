@@ -1,7 +1,11 @@
 {% extends "flask_user_layout.html" %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='movies.css')}}"/>
+{% endblock %}
+
 {% block content %}
 <div class="container">
-    <h2>Movies</h2>
+    <h1 class="text-center">MOVIES</h1>
 
     {% for m in movies %}
         <div class="panel panel-default">

@@ -1,0 +1,31 @@
+/* Styling for the main content area */
+.info {
+    background-color: #a9a9a9; 
+    padding: 15px;
+    border-radius: 15px;
+}
+
+/* Styling for the heading */
+h1.text-center {
+    color: #bdbbbd; 
+    margin-bottom: 50px; /* Space below the heading */
+}
+
+/* Styling for buttons */
+.info .btn {
+    display: block; /* Make the buttons block level for full width */
+    width: 100%; /* Full width */
+    margin-bottom: 20px; /* Space between buttons */
+    background-color: #210b26; 
+}
+
+.info .btn a {
+    color: #fff; /* White text for links */
+    display: block; /* Make link fill the button */
+    text-decoration: none; /* No underline for links */
+    padding: 10px 0; /* Padding for link to increase clickable area */
+}
+
+.info .btn a:hover {
+    background-color: #120615 /* Slightly darker on hover */
+}
