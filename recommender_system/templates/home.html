@@ -1,10 +1,29 @@
 {% extends "flask_user_layout.html" %}
+<style>
+    .centered-link {
+    background-color: darkgrey;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    margin: 10px 0; /* Adds space between each link */
+    }
+
+    .centered-link a {
+        color: white;
+        text-decoration: none; /* Optional: Removes underline from links */
+    }
+
+    .centered-link a:hover {
+        text-decoration: underline; /* Optional: Adds underline on hover */
+    }
+</style>
+{% block title %} {{ user_manager.USER_APP_NAME }} {% endblock %}
 {% block content %}
     <h2>Home page</h2>
-    <p><a href={{ url_for('user.register') }}>Register</a></p>
-    <p><a href={{ url_for('user.login') }}>Sign in</a></p>
-    <p><a href={{ url_for('home_page') }}>Home page</a> (accessible to anyone)</p>
-    <p><a href={{ url_for('movies_page') }}>Movies</a> (login required)</p>
-    <p><a href={{ url_for('recommendations') }}>Recommendations for you</a> (login required)</p>
-    <p><a href={{ url_for('user.logout') }}>Sign out</a></p>
+    <p class="centered-link"><a href={{ url_for('user.register') }}>Register</a></p>
+    <p class="centered-link"><a href={{ url_for('user.login') }}>Sign in</a></p>
+    <p class="centered-link"><a href={{ url_for('home_page') }}>Home page</a> (accessible to anyone)</p>
+    <p class="centered-link"><a href={{ url_for('movies_page') }}>Movies</a> (login required)</p>
+    <p class="centered-link"><a href={{ url_for('recommendations') }}>Recommendations for you</a> (login required)</p>
+    <p class="centered-link"><a href={{ url_for('user.logout') }}>Sign out</a></p>
 {% endblock %}
