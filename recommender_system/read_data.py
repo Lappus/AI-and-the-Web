@@ -111,10 +111,10 @@ def check_and_read_data(db_session):
                         db_session.rollback()
                         pass
                 count += 1
-                if count % 100 == 0:
+                if count % 5000 == 0:
                     print(count, " Ratings read")
-                # read only first 500 entries for testing
-                if count == 100:
+                # read only first 1000 entries for testing
+                if count == 5000:
                     break
 
       
