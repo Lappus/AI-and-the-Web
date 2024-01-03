@@ -1,10 +1,81 @@
 <!-- recommendations.html -->
 
 {% extends "flask_user_layout.html" %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='movies.css')}}"/>
+{% endblock %}
+
 {% block content %}
-    <div class="container">
-        <h2>Your recommendations! </h2>
-        <p>Users similar to you (your id: {{your_user_id}}): {{similar_users}}. Your top movies with respective estimated rating: {{top_movies}}</p>
-        <a href="{{ url_for('recommendations') }}" class="btn btn-primary"> Recalculate best matches </a>
-    </div>
+<div class="container">
+    <h2>Your recommendations! </h2>
+    <p>Users similar to you (your id: {{your_user_id}}): {{similar_users}}. Your top movies with respective estimated rating: {{top_movies}}</p>
+    <a href="{{ url_for('recommendations') }}" class="btn btn-primary"> Recalculate best matches </a>
+
+    {% for m in movies %}
+        <div class="panel panel-default">
+            <div class="panel-heading"><b>{{ m.title }}</b></div>
+            <div class="panel-body">
+                <p>
+                    {% for g in m.genres %}
+                        <span class="label label-default">{{ g.genre }}</span>
+                    {% endfor %}
+                </p>
+                <p>
+                    {% for movieId, tag in tags.items() %}
+                        {% if movieId == m.id %}
+                            {% for t in tag %}
+                            <span class="label label-default">{{ t.tag }}</span>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </p>
+                <p>
+                    {% for movieId, link in links.items() %}
+                        {% if movieId == m.id %}
+                            {% for l in link %}
+                            <a class="label label-default" href ={{ "https://www.imdb.com/title/tt0" + l.imdb_id|string}}  >{{ "https://www.imdb.com/title/tt0" + l.imdb_id|string }}</a>
+
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </p>
+
+                <p>
+                    {% for movieId, link in links.items() %}
+                        {% if movieId == m.id %}
+                            {% for l in link %}
+                            <a class="label label-default" href ={{ "https://www.themoviedb.org/movie/" + l.tmdb_id|string}}  >{{ "https://www.themoviedb.org/movie/" + l.tmdb|string }}</a>
+
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </p>
+
+            </div>
+            <div class="panel-footer">Rate:
+                <form method="post" action="{{ url_for('movies_page') }}">
+                    <input type="hidden" name="movie_id" value="{{ m.id }}">
+                    <button type="submit" name="rating" value="1" class="card-link btn btn-link">1</button>
+                </form>
+                <form method="post" action="{{ url_for('movies_page') }}">
+                    <input type="hidden" name="movie_id" value="{{ m.id }}">
+                    <button type="submit" name="rating" value="2" class="card-link btn btn-link">2</button>
+                </form>
+                <form method="post" action="{{ url_for('movies_page') }}">
+                    <input type="hidden" name="movie_id" value="{{ m.id }}">
+                    <button type="submit" name="rating" value="3" class="card-link btn btn-link">3</button>
+                </form>
+                <form method="post" action="{{ url_for('movies_page') }}">
+                    <input type="hidden" name="movie_id" value="{{ m.id }}">
+                    <button type="submit" name="rating" value="4" class="card-link btn btn-link">4</button>
+                </form>
+                <form method="post" action="{{ url_for('movies_page') }}">
+                    <input type="hidden" name="movie_id" value="{{ m.id }}">
+                    <button type="submit" name="rating" value="5" class="card-link btn btn-link">5</button>
+                </form>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
 {% endblock %}
