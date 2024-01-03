@@ -146,6 +146,7 @@ def recommendations():
     recommended_movies = []
     tags = {}
     links = {}
+    average_ratings = {}
     # as for the Movie page: Collect the movies with the repective ids
     for id in extracted_numbers:
         recommended_movie = Movie.query.filter_by(id = id).first()
@@ -155,6 +156,7 @@ def recommendations():
     for movie in recommended_movies:
         tags[movie.id] = Tag.query.filter_by(movie_id=movie.id).all()
         links[movie.id] = Link.query.filter_by(movie_id=movie.id).all()
+        average_ratings.update({movie.id: AverageRating.query.filter_by(movie_id=movie.id).first()})
     # use the template to display the results 
 
     return render_template("recommendations.html", 
@@ -163,7 +165,8 @@ def recommendations():
                            top_movies=top_movie_names, 
                            movies=recommended_movies, 
                            tags=tags, 
-                           links=links)
+                           links=links,
+                           average_ratings=average_ratings)
 
 # this function provides the movie names for the repective movie ids out of our db
 def get_movie_names(movie_ids):
