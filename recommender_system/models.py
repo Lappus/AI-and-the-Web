@@ -61,3 +61,8 @@ class Tag(db.Model):
     movie_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True,  nullable=False)
     tag = db.Column(db.String(255), primary_key=True,  nullable=False)
     timestamp = db.Column(db.Integer, primary_key=True,  nullable=False)
+
+class AverageRating(db.Model):
+    __tablename__ = 'average_rating'
+    movie_id = db.Column(db.Integer, db.ForeignKey('movies.id'), primary_key=True, nullable=False)
+    rating = db.Column(db.Float, primary_key=True, nullable=False)

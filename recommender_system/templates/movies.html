@@ -46,6 +46,15 @@
                         {% endif %}
                     {% endfor %}
                 </p>
+                <p>
+                    {% for movieId, rating in average_ratings.items() %}
+                        {% if movieId == m.id %}
+        
+                            <a class="label label-default">{{ rating.rating }}</a>
+                            
+                        {% endif %}
+                    {% endfor %}
+                </p>
 
             </div>
             <div class="panel-footer">Rate:

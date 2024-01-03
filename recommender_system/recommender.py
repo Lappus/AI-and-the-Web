@@ -8,7 +8,8 @@ from surprise.model_selection import train_test_split
 from surprise import KNNWithMeans
 import pandas as pd
 
-from models import db, User, Movie, Tag, Link, MovieGenre, Rating
+from average_rating import calc_average_rating
+from models import db, User, Movie, Tag, Link, MovieGenre, Rating, AverageRating
 from read_data import check_and_read_data
 from search import recommended
 
@@ -61,11 +62,12 @@ def movies_page():
     # String-based templates
     movies = Movie.query.limit(10).all()
     tags = {}
+    links = {}
+    average_ratings = {}
     for movie in movies:
         tags.update({movie.id: Tag.query.filter_by(movie_id=movie.id).limit(10).all()})
-    links = {}
-    for movie in movies:
         links.update({movie.id: Link.query.filter_by(movie_id=movie.id).limit(10).all()})
+        average_ratings.update({movie.id: AverageRating.query.filter_by(movie_id=movie.id).first()})
 
 
     if request.method == 'POST':
@@ -91,7 +93,7 @@ def movies_page():
         db.session.commit()
         return render_template('rating.html', rating_value=rating_value, title=title[0])
 
-    return render_template("movies.html", movies=movies, tags=tags, links=links)
+    return render_template("movies.html", movies=movies, tags=tags, links=links, average_ratings=average_ratings)
 
 @app.route('/recommendations', methods=['GET', 'POST'])
 #@login_required  # User must be authenticated
@@ -155,6 +157,9 @@ def get_movie_names(movie_ids):
         if movie:
             movie_names.append(movie.title)
     return movie_names 
+
+
+calc_average_rating()
 
 # Start development web server
 if __name__ == '__main__':
