@@ -97,7 +97,6 @@ def movies_page():
 
 @app.route('/recommendations', methods=['GET', 'POST'])
 #@login_required  # User must be authenticated
-
 def recommendations():
 
     # NOTE_ this is currently done with a set user ID = 1 for testing purposes
@@ -116,10 +115,26 @@ def recommendations():
 
     # Get the movies that the current user has rated (only needd so we can get unrated_movies afterwards)
     rated_movies = [row[0] for row in db.session.query(Rating.movie_id).filter_by(user_id=current_user.id).all()]
-    # Get all movies excluding the ones the user has rated
-    unrated_movies = db.session.query(Movie).filter(~Movie.id.in_(rated_movies)).all()
+    
+    if request.method == 'POST':
+        # get the genre from the html Code
+        wanted_genre = request.form.get('genre')
+        # get the movies in our db that have the wished genre 
+        movies_with_genre = db.session.query(Movie).join(MovieGenre).\
+            filter(MovieGenre.genre == wanted_genre).all()
+        # get the repective movie ids
+        movie_ids_with_genre = [movie.id for movie in movies_with_genre]
 
-    similar_users, predictions = recommended(data, unrated_movies, your_user_id)
+        # get all movies that the user hasn't rated and also that have the wanted genre
+        unrated_movies_with_genre = db.session.query(Movie).filter(~Movie.id.in_(rated_movies)).\
+            filter(Movie.id.in_(movie_ids_with_genre)).all()
+        
+        similar_users, predictions = recommended(data, unrated_movies_with_genre, your_user_id)
+
+    else:    
+        # Get all movies excluding the ones the user has rated
+        unrated_movies = db.session.query(Movie).filter(~Movie.id.in_(rated_movies)).all()
+        similar_users, predictions = recommended(data, unrated_movies, your_user_id)
 
     # Get the top 3 movies with the best predictions
     top_movies = sorted(predictions.items(), key=lambda x: x[1], reverse=True)[:3]
@@ -141,6 +156,7 @@ def recommendations():
         tags[movie.id] = Tag.query.filter_by(movie_id=movie.id).all()
         links[movie.id] = Link.query.filter_by(movie_id=movie.id).all()
     # use the template to display the results 
+
     return render_template("recommendations.html", 
                            your_user_id=your_user_id, 
                            similar_users=similar_users, 
