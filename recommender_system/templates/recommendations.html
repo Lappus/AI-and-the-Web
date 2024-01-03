@@ -11,6 +11,47 @@
     <p>Users similar to you (your id: {{your_user_id}}): {{similar_users}}. Your top movies with respective estimated rating: {{top_movies}}</p>
     <a href="{{ url_for('recommendations') }}" class="btn btn-primary"> Recalculate best matches </a>
 
+    <div class="categories">
+        <h3>Categories</h3>
+        <form method="post" action="{{ url_for('recommendations') }}">
+            <button type="submit" name="genre" value="Action" class="card-link btn btn-link">Action</button>
+       
+            <button type="submit" name="genre" value="Adventure" class="card-link btn btn-link">Adventure</button>
+       
+            <button type="submit" name="genre" value="Animation" class="card-link btn btn-link">Animation</button>
+      
+            <button type="submit" name="genre" value="Children's" class="card-link btn btn-link">Children's</button>
+        
+            <button type="submit" name="genre" value="Comedy" class="card-link btn btn-link">Comedy</button>
+       
+            <button type="submit" name="genre" value="Crime" class="card-link btn btn-link">Crime</button>
+       
+            <button type="submit" name="genre" value="Documentary" class="card-link btn btn-link">Documentary</button>
+        
+            <button type="submit" name="genre" value="Drama" class="card-link btn btn-link">Drama</button>
+       
+            <button type="submit" name="genre" value="Fantasy" class="card-link btn btn-link">Fantasy</button>
+        
+            <button type="submit" name="genre" value="Film-Noir" class="card-link btn btn-link">Film-Noir</button>
+        
+            <button type="submit" name="genre" value="Horror" class="card-link btn btn-link">Horror</button>
+       
+            <button type="submit" name="genre" value="Musical" class="card-link btn btn-link">Musical</button>
+        
+            <button type="submit" name="genre" value="Mystery" class="card-link btn btn-link">Mystery</button>
+        
+            <button type="submit" name="genre" value="Romance" class="card-link btn btn-link">Romance</button>
+        
+            <button type="submit" name="genre" value="Sci-Fi" class="card-link btn btn-link">Sci-Fi</button>
+        
+            <button type="submit" name="genre" value="Thriller" class="card-link btn btn-link">Thriller</button>
+        
+            <button type="submit" name="genre" value="War" class="card-link btn btn-link">War</button>
+        
+            <button type="submit" name="genre" value="Western" class="card-link btn btn-link">Western</button>
+        </form>
+    </div>
+
     {% for m in movies %}
         <div class="panel panel-default">
             <div class="panel-heading"><b>{{ m.title }}</b></div>
