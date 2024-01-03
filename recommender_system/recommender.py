@@ -95,10 +95,11 @@ def movies_page():
 
 @app.route('/recommendations', methods=['GET', 'POST'])
 #@login_required  # User must be authenticated
+
 def recommendations():
 
     # NOTE_ this is currently done with a set user ID = 1 for testing purposes
-    your_user_id = 1  # later on current_user would be used 
+    your_user_id = 2  # later on current_user would be used 
 
     ratings = Rating.query.all()
 
@@ -120,10 +121,40 @@ def recommendations():
 
     # Get the top 3 movies with the best predictions
     top_movies = sorted(predictions.items(), key=lambda x: x[1], reverse=True)[:3]
+    # extract the number of the sorted predictions since we get a tuple (Movie.id and rating)
+    extracted_numbers = [item[0] for item in top_movies]
+    # use the function below to get the names
+    top_movie_names = get_movie_names(extracted_numbers)
+    
+    recommended_movies = []
+    tags = {}
+    links = {}
+    # as for the Movie page: Collect the movies with the repective ids
+    for id in extracted_numbers:
+        recommended_movie = Movie.query.filter_by(id = id).first()
+        if recommended_movie:
+            recommended_movies.append(recommended_movie)
+    # get the tags and the links for the recommended movies
+    for movie in recommended_movies:
+        tags[movie.id] = Tag.query.filter_by(movie_id=movie.id).all()
+        links[movie.id] = Link.query.filter_by(movie_id=movie.id).all()
+    # use the template to display the results 
+    return render_template("recommendations.html", 
+                           your_user_id=your_user_id, 
+                           similar_users=similar_users, 
+                           top_movies=top_movie_names, 
+                           movies=recommended_movies, 
+                           tags=tags, 
+                           links=links)
 
-    return render_template("recommendations.html", your_user_id=your_user_id, similar_users=similar_users, top_movies=top_movies)
-
-
+# this function provides the movie names for the repective movie ids out of our db
+def get_movie_names(movie_ids):
+    movie_names=[]
+    for movie_id in movie_ids:
+        movie = Movie.query.filter_by(id=movie_id).first()
+        if movie:
+            movie_names.append(movie.title)
+    return movie_names 
 
 # Start development web server
 if __name__ == '__main__':
