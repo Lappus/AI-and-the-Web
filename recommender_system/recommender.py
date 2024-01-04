@@ -135,7 +135,8 @@ def recommendations():
         
             similar_users, predictions = recommended(data, unrated_movies_with_genre, your_user_id)
 
-        else:    
+        else:
+
             # Get all movies excluding the ones the user has rated
             unrated_movies = db.session.query(Movie).filter(~Movie.id.in_(rated_movies)).all()
             similar_users, predictions = recommended(data, unrated_movies, your_user_id)
@@ -145,16 +146,38 @@ def recommendations():
          # extract the number of the sorted predictions since we get a tuple (Movie.id and rating)
         extracted_ids = [item[0] for item in top_movies]
 
+    # If the user has less than 20 ratings we recommend the top 10 movies on average instead of personalized  recommendations
     else:
-        top_movies = db.session.query(AverageRating).order_by(AverageRating.rating.desc()).limit(10).all()
-        similar_users = None
-        print("Not enough ratings to make recommendations")
-        print("Top movies: ", top_movies)
-        print("Top movies type: ", type(top_movies))
-        print("Top movies length: ", top_movies.__len__())
-        extracted_ids = [movie.movie_id for movie in top_movies]
-        print(extracted_ids)
+        #if genre is selected we recommend the top 10 movies with the selected genre
+        if request.method == 'POST':
+            # get the genre from the html Code
+            wanted_genre = request.form.get('genre')
+            # get the movies in our db that have the wished genre 
+            top_movies = db.session.query(Movie).\
+                            join(MovieGenre).\
+                            filter(MovieGenre.genre == wanted_genre).\
+                            outerjoin(AverageRating, Movie.id == AverageRating.movie_id).\
+                            order_by(AverageRating.rating.desc()).\
+                            limit(10).all()
+            print("Not enough ratings to make recommendations")
+            print("Top movies: ", top_movies)
+            print("Top movies type: ", type(top_movies))
+            print("Top movies length: ", top_movies.__len__())
+            extracted_ids = [movie.id for movie in top_movies]
+            print(extracted_ids)
 
+        #else its just the top 10 movies on average regardless of genre 
+        else:
+            top_movies = db.session.query(AverageRating).order_by(AverageRating.rating.desc()).limit(10).all()
+            print("Not enough ratings to make recommendations")
+            print("Top movies: ", top_movies)
+            print("Top movies type: ", type(top_movies))
+            print("Top movies length: ", top_movies.__len__())
+            extracted_ids = [movie.movie_id for movie in top_movies]
+            print(extracted_ids)
+            wanted_genre=None
+
+        similar_users = None
 
     # use the function below to get the names
     top_movie_names = get_movie_names(extracted_ids)
@@ -182,7 +205,8 @@ def recommendations():
                            movies=recommended_movies, 
                            tags=tags, 
                            links=links,
-                           average_ratings=average_ratings)
+                           average_ratings=average_ratings,
+                           wanted_genre=wanted_genre)
 
 # this function provides the movie names for the repective movie ids out of our db
 def get_movie_names(movie_ids):
