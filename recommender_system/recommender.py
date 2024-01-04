@@ -72,28 +72,42 @@ def movies_page():
 
 
     if request.method == 'POST':
-        # Handle rating submission
-        movie_id = request.form.get('movie_id')
-        rating_value = request.form.get('rating')
-        user_id = current_user.id  
+        if 'movie_id' in request.form:
+            # Handle rating submission
+            movie_id = request.form.get('movie_id')
+            rating_value = request.form.get('rating')
+            user_id = current_user.id  
 
-        # Check if the user has already rated the movie
-        existing_rating = Rating.query.filter_by(user_id=user_id, movie_id=movie_id).first()
+            # Check if the user has already rated the movie
+            existing_rating = Rating.query.filter_by(user_id=user_id, movie_id=movie_id).first()
 
-        if existing_rating:
-            # Update the existing rating
-            existing_rating.rating = rating_value
-        else:
-            # Insert a new rating
-            new_rating = Rating(user_id=user_id, movie_id=movie_id, rating=rating_value)
-            db.session.add(new_rating)
-        
-        title = db.session.query(Movie.title).join(Rating).\
-            filter(Rating.movie_id == movie_id).first()
+            if existing_rating:
+                # Update the existing rating
+                existing_rating.rating = rating_value
+            else:
+                # Insert a new rating
+                new_rating = Rating(user_id=user_id, movie_id=movie_id, rating=rating_value)
+                db.session.add(new_rating)
+            
+            title = db.session.query(Movie.title).join(Rating).\
+                filter(Rating.movie_id == movie_id).first()
 
-        db.session.commit()
-        return render_template('rating.html', rating_value=rating_value, title=title[0])
-
+            db.session.commit()
+            return render_template('rating.html', rating_value=rating_value, title=title[0])
+        if 'search' in request.form:
+            # Handle search submission
+            search_query = request.form.get('search')
+            search_query = re.sub('[^A-Za-z0-9]+', '', search_query)
+            movies = Movie.query.filter(Movie.title.like(f'%{search_query}%')).all()
+            tags = {}
+            links = {}
+            average_ratings = {}
+            for movie in movies:
+                tags.update({movie.id: Tag.query.filter_by(movie_id=movie.id).limit(10).all()})
+                links.update({movie.id: Link.query.filter_by(movie_id=movie.id).limit(10).all()})
+                average_ratings.update({movie.id: AverageRating.query.filter_by(movie_id=movie.id).first()})
+        return render_template("movies.html", movies=movies, tags=tags, links=links, average_ratings=average_ratings)
+    
     return render_template("movies.html", movies=movies, tags=tags, links=links, average_ratings=average_ratings)
 
 @app.route('/recommendations', methods=['GET', 'POST'])
