@@ -7,6 +7,7 @@ from surprise import Reader
 from surprise.model_selection import train_test_split
 from surprise import KNNWithMeans
 import pandas as pd
+import re
 
 from average_rating import calc_average_rating
 from models import db, User, Movie, Tag, Link, MovieGenre, Rating, AverageRating
@@ -115,40 +116,55 @@ def recommendations():
 
     # Get the movies that the current user has rated (only needd so we can get unrated_movies afterwards)
     rated_movies = [row[0] for row in db.session.query(Rating.movie_id).filter_by(user_id=current_user.id).all()]
-    
-    if request.method == 'POST':
-        # get the genre from the html Code
-        wanted_genre = request.form.get('genre')
-        # get the movies in our db that have the wished genre 
-        movies_with_genre = db.session.query(Movie).join(MovieGenre).\
-            filter(MovieGenre.genre == wanted_genre).all()
-        # get the repective movie ids
-        movie_ids_with_genre = [movie.id for movie in movies_with_genre]
+    print(type(rated_movies))
+    print(rated_movies.__len__())
 
-        # get all movies that the user hasn't rated and also that have the wanted genre
-        unrated_movies_with_genre = db.session.query(Movie).filter(~Movie.id.in_(rated_movies)).\
-            filter(Movie.id.in_(movie_ids_with_genre)).all()
+    if rated_movies.__len__() >= 60:
+        if request.method == 'POST':
+            # get the genre from the html Code
+            wanted_genre = request.form.get('genre')
+            # get the movies in our db that have the wished genre 
+            movies_with_genre = db.session.query(Movie).join(MovieGenre).\
+                filter(MovieGenre.genre == wanted_genre).all()
+            # get the repective movie ids
+            movie_ids_with_genre = [movie.id for movie in movies_with_genre]
+
+            # get all movies that the user hasn't rated and also that have the wanted genre
+            unrated_movies_with_genre = db.session.query(Movie).filter(~Movie.id.in_(rated_movies)).\
+                filter(Movie.id.in_(movie_ids_with_genre)).all()
         
-        similar_users, predictions = recommended(data, unrated_movies_with_genre, your_user_id)
+            similar_users, predictions = recommended(data, unrated_movies_with_genre, your_user_id)
 
-    else:    
-        # Get all movies excluding the ones the user has rated
-        unrated_movies = db.session.query(Movie).filter(~Movie.id.in_(rated_movies)).all()
-        similar_users, predictions = recommended(data, unrated_movies, your_user_id)
+        else:    
+            # Get all movies excluding the ones the user has rated
+            unrated_movies = db.session.query(Movie).filter(~Movie.id.in_(rated_movies)).all()
+            similar_users, predictions = recommended(data, unrated_movies, your_user_id)
 
-    # Get the top 3 movies with the best predictions
-    top_movies = sorted(predictions.items(), key=lambda x: x[1], reverse=True)[:3]
-    # extract the number of the sorted predictions since we get a tuple (Movie.id and rating)
-    extracted_numbers = [item[0] for item in top_movies]
+        # Get the top 3 movies with the best predictions
+        top_movies = sorted(predictions.items(), key=lambda x: x[1], reverse=True)[:3]
+         # extract the number of the sorted predictions since we get a tuple (Movie.id and rating)
+        extracted_ids = [item[0] for item in top_movies]
+
+    else:
+        top_movies = db.session.query(AverageRating).order_by(AverageRating.rating.desc()).limit(10).all()
+        similar_users = None
+        print("Not enough ratings to make recommendations")
+        print("Top movies: ", top_movies)
+        print("Top movies type: ", type(top_movies))
+        print("Top movies length: ", top_movies.__len__())
+        extracted_ids = [movie.movie_id for movie in top_movies]
+        print(extracted_ids)
+
+
     # use the function below to get the names
-    top_movie_names = get_movie_names(extracted_numbers)
+    top_movie_names = get_movie_names(extracted_ids)
     
     recommended_movies = []
     tags = {}
     links = {}
     average_ratings = {}
     # as for the Movie page: Collect the movies with the repective ids
-    for id in extracted_numbers:
+    for id in extracted_ids:
         recommended_movie = Movie.query.filter_by(id = id).first()
         if recommended_movie:
             recommended_movies.append(recommended_movie)

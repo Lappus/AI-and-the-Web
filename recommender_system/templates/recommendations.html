@@ -8,7 +8,12 @@
 {% block content %}
 <div class="container">
     <h2>Your recommendations! </h2>
-    <p>Users similar to you (your id: {{your_user_id}}): {{similar_users}}. Your top movies with respective estimated rating: {{top_movies}}</p>
+    {% if similar_users != None %}
+        <p>Users similar to you (your id: {{your_user_id}}): {{similar_users}}. Your top movies with respective estimated rating: {{top_movies}}</p>
+    {% else %}
+        <p>You have rated less then 20 movies, so you get no personal recommandation, sorry! Here are 10 of the best rated movies instead: {{top_movies}}</p>
+    {% endif %}
+
     <a href="{{ url_for('recommendations') }}" class="btn btn-primary"> Recalculate best matches </a>
 
     <div class="categories">
