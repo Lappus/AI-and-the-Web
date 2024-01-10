@@ -66,6 +66,7 @@
   flex-wrap: wrap; /* Allow the items to wrap if necessary */
   font-weight: bold; /* Bold font for emphasis */
   color: #867a89;
+  text-align: center;
 }
 
 .panel-footer form {

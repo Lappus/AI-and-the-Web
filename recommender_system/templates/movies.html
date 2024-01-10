@@ -56,9 +56,20 @@
                 <p>
                     {% for movieId, rating in average_ratings.items() %}
                         {% if movieId == m.id %}
-        
-                            <a class="label label-default">{{ rating.rating }}</a>
-                            
+                            {% if rating is not none %}
+                                <a class="label label-default">{{ rating.rating }}</a>
+                                {% if rating.rating is not none and rating.rating < 1.5  %}
+                                    <img src="../static/images/onestar.png" alt="1">
+                                {% elif rating.rating >= 1.5 and rating.rating < 2.5 %}
+                                    <img src="../static/images/twostars.png" alt=2">
+                                {% elif rating.rating >= 2.5 and rating.rating < 3.5 %}
+                                    <img src="../static/images/threestars.png" alt="3">
+                                {% elif rating.rating >= 3.5 and rating.rating < 4.5 %}
+                                    <img src="../static/images/fourstars.png" alt="4">
+                                {% elif rating.rating >= 4.5 and rating.rating < 5.1 %}
+                                    <img src="../static/images/fivestars.png" alt="5">
+                                {% endif %}
+                            {% endif %}
                         {% endif %}
                     {% endfor %}
                 </p>
@@ -67,23 +78,23 @@
             <div class="panel-footer">Rate:
                 <form method="post" action="{{ url_for('movies_page') }}">
                     <input type="hidden" name="movie_id" value="{{ m.id }}">
-                    <button type="submit" name="rating" value="1" class="card-link btn btn-link">1</button>
+                    <button type="submit" name="rating" value="1" class="card-link btn btn-link"><img src="../static/images/onestar.png" alt="1"></button>
                 </form>
                 <form method="post" action="{{ url_for('movies_page') }}">
                     <input type="hidden" name="movie_id" value="{{ m.id }}">
-                    <button type="submit" name="rating" value="2" class="card-link btn btn-link">2</button>
+                    <button type="submit" name="rating" value="2" class="card-link btn btn-link"><img src="../static/images/twostars.png" alt="2"></button>
                 </form>
                 <form method="post" action="{{ url_for('movies_page') }}">
                     <input type="hidden" name="movie_id" value="{{ m.id }}">
-                    <button type="submit" name="rating" value="3" class="card-link btn btn-link">3</button>
+                    <button type="submit" name="rating" value="3" class="card-link btn btn-link"><img src="../static/images/threestars.png" alt="3"></button>
                 </form>
                 <form method="post" action="{{ url_for('movies_page') }}">
                     <input type="hidden" name="movie_id" value="{{ m.id }}">
-                    <button type="submit" name="rating" value="4" class="card-link btn btn-link">4</button>
+                    <button type="submit" name="rating" value="4" class="card-link btn btn-link"><img src="../static/images/fourstars.png" alt="4"></button>
                 </form>
                 <form method="post" action="{{ url_for('movies_page') }}">
                     <input type="hidden" name="movie_id" value="{{ m.id }}">
-                    <button type="submit" name="rating" value="5" class="card-link btn btn-link">5</button>
+                    <button type="submit" name="rating" value="5" class="card-link btn btn-link"><img src="../static/images/fivestars.png" alt="5"></button>
                 </form>
             </div>
         </div>
