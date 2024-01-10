@@ -233,7 +233,7 @@ def get_movie_names(movie_ids):
 
 
 calc_average_rating()
-initdb_command()
+#initdb_command()
 
 # Start development web server
 if __name__ == '__main__':
