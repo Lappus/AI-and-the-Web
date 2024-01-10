@@ -111,11 +111,11 @@ def movies_page():
     return render_template("movies.html", movies=movies, tags=tags, links=links, average_ratings=average_ratings)
 
 @app.route('/recommendations', methods=['GET', 'POST'])
-#@login_required  # User must be authenticated
+@login_required  # User must be authenticated
 def recommendations():
 
     # NOTE_ this is currently done with a set user ID = 1 for testing purposes
-    your_user_id = 2  # later on current_user would be used 
+    your_user_id = current_user  # later on current_user would be used 
 
     ratings = Rating.query.all()
 
@@ -233,6 +233,7 @@ def get_movie_names(movie_ids):
 
 
 calc_average_rating()
+initdb_command()
 
 # Start development web server
 if __name__ == '__main__':
