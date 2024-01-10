@@ -128,10 +128,10 @@ def check_and_read_data(db_session):
                     try:
                         user_id = row[0]
                         # Check if the user with the given ID already exists
-                        existing_user = User.query.filter_by(username=user_id).first()
+                        existing_user = User.query.filter_by(id=user_id).first()
 
                         if not existing_user:
-                            user = User(active=False, username=user_id, password="n.a.")
+                            user = User(active=False, id=user_id, password="n.a.", username=f"User_{user_id}")
                             db_session.add(user)
                             db_session.commit()
                     except IntegrityError as e:
@@ -139,10 +139,10 @@ def check_and_read_data(db_session):
                         db_session.rollback()
                         pass
                 count += 1
-                if count % 100 == 0:
+                if count % 5000 == 0:
                     print(count, "user read")
-                # read only first 500 entries for testing
-                if count == 100:
+                # read only first 5000 entries for testing
+                if count == 5000:
                     break
 
 
