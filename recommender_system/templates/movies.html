@@ -75,7 +75,8 @@
                 </p>
 
             </div>
-            <div class="panel-footer">Rate:
+            <div class="panel-footer">Rate: 
+                 
                 <form method="post" action="{{ url_for('movies_page') }}">
                     <input type="hidden" name="movie_id" value="{{ m.id }}">
                     <button type="submit" name="rating" value="1" class="card-link btn btn-link"><img src="../static/images/onestar.png" alt="1"></button>
@@ -96,6 +97,24 @@
                     <input type="hidden" name="movie_id" value="{{ m.id }}">
                     <button type="submit" name="rating" value="5" class="card-link btn btn-link"><img src="../static/images/fivestars.png" alt="5"></button>
                 </form>
+                {% for rating in user_ratings %}
+                    {% if rating.movie_id == m.id %} 
+                        {% set rating_value = rating.rating|int %} 
+                        <span>Your rating: {{ rating_value }}
+                            {% if rating_value == 1 %}
+                                <img src="../static/images/onestar.png">
+                            {% elif rating_value == 2 %}
+                                <img src="../static/images/onestar.png">
+                            {% elif rating_value == 3 %}
+                                <img src="../static/images/onestar.png">
+                            {% elif rating_value == 4 %}
+                                <img src="../static/images/onestar.png">
+                            {% elif rating_value == 5 %}
+                                <img src="../static/images/onestar.png">
+                            {% endif %}
+                        </span>
+                    {% endif %}
+                {% endfor %}
             </div>
         </div>
     {% endfor %}
