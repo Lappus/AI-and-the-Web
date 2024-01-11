@@ -1,123 +1,55 @@
 {% extends "flask_user_layout.html" %}
 {% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='movies.css')}}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='movies.css') }}"/>
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <h1 class="text-center">MOVIES</h1>
-    
-    <form class="form-inline" method="post">
-        <div class="form-group">
-            <input type="text" class="form-control" name="search" placeholder="Search movies">
-        </div>
-        <button type="submit" class="btn btn-primary">Search</button>
-    </form>
+    <div class="container">
+        <h1 class="text-center">MOVIES</h1>
 
-    {% for m in movies %}
-        <div class="panel panel-default">
-            <div class="panel-heading"><b>{{ m.title }}</b></div>
-            <div class="panel-body">
-                <p>
-                    {% for g in m.genres %}
-                        <span class="label label-default">{{ g.genre }}</span>
-                    {% endfor %}
-                </p>
-                <p>
-                    {% for movieId, tag in tags.items() %}
-                        {% if movieId == m.id %}
-                            {% for t in tag %}
-                            <span class="label label-default">{{ t.tag }}</span>
-                            {% endfor %}
-                        {% endif %}
-                    {% endfor %}
-                </p>
-                <p>
-                    {% for movieId, link in links.items() %}
-                        {% if movieId == m.id %}
-                            {% for l in link %}
-                            <a class="label label-default" href ={{ "https://www.imdb.com/title/tt0" + l.imdb_id|string}}  >{{ "https://www.imdb.com/title/tt0" + l.imdb_id|string }}</a>
+        <!-- Tab navigation -->
+        <ul class="nav nav-tabs" id="moviesTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="genres-tab" data-toggle="tab" href="#genres" role="tab" aria-controls="genres" aria-selected="true">Genres</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="alphabetical-tab" data-toggle="tab" href="#alphabetical" role="tab" aria-controls="alphabetical" aria-selected="false">Movies from A to Z</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="ratings-tab" data-toggle="tab" href="#ratings" role="tab" aria-controls="ratings" aria-selected="false">Movies according to Ratings</a>
+            </li>
+        </ul>
 
-                            {% endfor %}
-                        {% endif %}
-                    {% endfor %}
-                </p>
-
-                <p>
-                    {% for movieId, link in links.items() %}
-                        {% if movieId == m.id %}
-                            {% for l in link %}
-                            <a class="label label-default" href ={{ "https://www.themoviedb.org/movie/" + l.tmdb_id|string}}  >{{ "https://www.themoviedb.org/movie/" + l.tmdb|string }}</a>
-
-                            {% endfor %}
-                        {% endif %}
-                    {% endfor %}
-                </p>
-                <p>
-                    {% for movieId, rating in average_ratings.items() %}
-                        {% if movieId == m.id %}
-                            {% if rating is not none %}
-                                <span style="color: black;">{{ rating.rating }}</span>
-                                {% if rating.rating is not none and rating.rating < 1.5  %}
-                                    <img src="../static/images/onestar.png" alt="1">
-                                {% elif rating.rating >= 1.5 and rating.rating < 2.5 %}
-                                    <img src="../static/images/twostars.png" alt=2">
-                                {% elif rating.rating >= 2.5 and rating.rating < 3.5 %}
-                                    <img src="../static/images/threestars.png" alt="3">
-                                {% elif rating.rating >= 3.5 and rating.rating < 4.5 %}
-                                    <img src="../static/images/fourstars.png" alt="4">
-                                {% elif rating.rating >= 4.5 and rating.rating < 5.1 %}
-                                    <img src="../static/images/fivestars.png" alt="5">
-                                {% endif %}
-                            {% endif %}
-                        {% endif %}
-                    {% endfor %}
-                </p>
-
-            </div>
-            <div class="panel-footer">Rate: 
-                 
-                <form method="post" action="{{ url_for('movies_page') }}">
-                    <input type="hidden" name="movie_id" value="{{ m.id }}">
-                    <button type="submit" name="rating" value="1" class="card-link btn btn-link"><img src="../static/images/onestar.png" alt="1"></button>
-                </form>
-                <form method="post" action="{{ url_for('movies_page') }}">
-                    <input type="hidden" name="movie_id" value="{{ m.id }}">
-                    <button type="submit" name="rating" value="2" class="card-link btn btn-link"><img src="../static/images/twostars.png" alt="2"></button>
-                </form>
-                <form method="post" action="{{ url_for('movies_page') }}">
-                    <input type="hidden" name="movie_id" value="{{ m.id }}">
-                    <button type="submit" name="rating" value="3" class="card-link btn btn-link"><img src="../static/images/threestars.png" alt="3"></button>
-                </form>
-                <form method="post" action="{{ url_for('movies_page') }}">
-                    <input type="hidden" name="movie_id" value="{{ m.id }}">
-                    <button type="submit" name="rating" value="4" class="card-link btn btn-link"><img src="../static/images/fourstars.png" alt="4"></button>
-                </form>
-                <form method="post" action="{{ url_for('movies_page') }}">
-                    <input type="hidden" name="movie_id" value="{{ m.id }}">
-                    <button type="submit" name="rating" value="5" class="card-link btn btn-link"><img src="../static/images/fivestars.png" alt="5"></button>
-                </form>
-                {% for rating in user_ratings %}
-                    {% if rating.movie_id == m.id %} 
-                        {% set rating_value = rating.rating|int %} 
-                        <span>Your rating: {{ rating_value }}
-                            {% if rating_value == 1 %}
-                                <img src="../static/images/onestar.png">
-                            {% elif rating_value == 2 %}
-                                <img src="../static/images/onestar.png">
-                            {% elif rating_value == 3 %}
-                                <img src="../static/images/onestar.png">
-                            {% elif rating_value == 4 %}
-                                <img src="../static/images/onestar.png">
-                            {% elif rating_value == 5 %}
-                                <img src="../static/images/onestar.png">
-                            {% endif %}
-                        </span>
-                    {% endif %}
+        <!-- Tab content -->
+        <div class="tab-content" id="moviesTabContent">
+            <!-- Genres Tab -->
+            <div class="tab-pane fade show active" id="genres" role="tabpanel" aria-labelledby="genres-tab">
+                <!-- Genre Buttons -->
+                {% for genre in genres %}
+                    <button type="button" class="btn btn-secondary" onclick="location.href='{{ url_for('movies_page', genre=genre) }}'">{{ genre }}</button>
                 {% endfor %}
             </div>
-        </div>
-    {% endfor %}
-</div>
 
+            <!-- Alphabetical Tab -->
+            <div class="tab-pane fade" id="alphabetical" role="tabpanel" aria-labelledby="alphabetical-tab">
+                <!-- Include movie_display.html with movies sorted alphabetically -->
+                {% with movies=alphabetical_movies %}
+                    {% include 'movie_display.html' %}
+                {% endwith %}
+            </div>
+
+            <!-- Ratings Tab -->
+            <div class="tab-pane fade" id="ratings" role="tabpanel" aria-labelledby="ratings-tab">
+                <!-- Include movie_display.html with movies sorted by ratings -->
+                {% with movies=rating_sorted_movies %}
+                    {% include 'movie_display.html' %}
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript for tabs -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+    
 {% endblock %}

@@ -28,8 +28,8 @@ body {
   margin-top: 4%;
 }
 
-.banner .navbar-brand {
-  color: #fff;
+.banner .navbar-brand a {
+  color: #fff !important;
   font-size: 1.8em;
   font-weight: 700;
   margin-left: 10%;

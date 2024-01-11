@@ -7,7 +7,7 @@ import pandas as pd
 from models import db, User, Movie, Tag, Link, MovieGenre, Rating    
 
 def recommended(data, unrated_movies, your_user_id):
-# Split the data into training and testing sets - right now I only work with the training set
+    # Split the data into training and testing sets - right now I only work with the training set
     trainset, testset = train_test_split(data, test_size=0.05)
 
     # Use user-based collaborative filtering with KNNWithMeans
@@ -21,10 +21,20 @@ def recommended(data, unrated_movies, your_user_id):
     # Train the algorithm on the training set
     algo.fit(trainset)
 
-    similar_users = algo.get_neighbors(your_user_id, k=3)  # Get 3 similar users
+    # Convert external user ID to internal user index
+    try:
+        internal_user_id = algo.trainset.to_inner_uid(your_user_id)
+    except ValueError:
+        # Handle the case where the user ID is not in the trainset
+        internal_user_id = None
 
+    # Get neighbors only if the user ID was found in the trainset
+    similar_users = []
+    if internal_user_id is not None:
+        similar_users = algo.get_neighbors(internal_user_id, k=3)
+    
     # Get the similarity scores between the target user and other users
-    similarity_scores = algo.sim[:, your_user_id]
+    similarity_scores = algo.sim[:, internal_user_id] if internal_user_id is not None else []
 
     predictions = {}
     for movie in unrated_movies:
@@ -33,9 +43,14 @@ def recommended(data, unrated_movies, your_user_id):
         similarity_sum = 0
 
         for similar_user, similarity in zip(similar_users, similarity_scores):
-            # Get the rating of the similar user for the movie
-            rating = algo.trainset.ur[similar_user]
-            rating = next((r[1] for r in rating if r[0] == movie.id), None)
+            try:
+                # Convert movie ID to internal item index
+                internal_movie_id = algo.trainset.to_inner_iid(movie.id)
+                # Get the rating if it exists
+                rating = algo.trainset.ur[similar_user].get(internal_movie_id, None)
+            except ValueError:
+                # Handle the case where the movie ID is not in the trainset
+                rating = None
 
             if rating is not None:
                 # Update the weighted sum and similarity sum

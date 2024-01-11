@@ -1,0 +1,73 @@
+{% for movie in movies %}
+    <div class="panel panel-default">
+        <div class="panel-heading"><b>{{ movie.title }}</b></div>
+        <div class="panel-body">
+            <p>
+                {% for genre in movie.genres %}
+                    <span class="label label-default">{{ genre.genre }}</span>
+                {% endfor %}
+            </p>
+            <p>
+                {% for tag in tags[movie.id] %}
+                    <span class="label label-default">{{ tag.tag }}</span>
+                {% endfor %}
+            </p>
+            <p>
+                {% for link in links[movie.id] %}
+                    <a class="label label-default" href="{{ 'https://www.imdb.com/title/tt0' + link.imdb_id|string }}">{{ 'https://www.imdb.com/title/tt0' + link.imdb_id|string }}</a>
+                    <a class="label label-default" href="{{ 'https://www.themoviedb.org/movie/' + link.tmdb_id|string }}">{{ 'https://www.themoviedb.org/movie/' + link.tmdb_id|string }}</a>
+                {% endfor %}
+            </p>
+            <p>
+                {% if average_ratings[movie.id] %}
+                    <span style="color: black;">{{ average_ratings[movie.id].rating }}</span>
+                    {% if rating is not none %}
+                                <span style="color: black;">{{ rating.rating }}</span>
+                                {% if rating.rating is not none and rating.rating < 1.5  %}
+                                    <img src="../static/images/onestar.png" alt="1">
+                                {% elif rating.rating >= 1.5 and rating.rating < 2.5 %}
+                                    <img src="../static/images/twostars.png" alt=2">
+                                {% elif rating.rating >= 2.5 and rating.rating < 3.5 %}
+                                    <img src="../static/images/threestars.png" alt="3">
+                                {% elif rating.rating >= 3.5 and rating.rating < 4.5 %}
+                                    <img src="../static/images/fourstars.png" alt="4">
+                                {% elif rating.rating >= 4.5 and rating.rating < 5.1 %}
+                                    <img src="../static/images/fivestars.png" alt="5">
+                                {% endif %}
+                            {% endif %}
+                {% endif %}
+            </p>
+        </div>
+        <div class="panel-footer">
+            Rate: 
+            {% for i in range(1, 6) %}
+                <form method="post" action="{{ url_for('movies_page') }}">
+                    <input type="hidden" name="movie_id" value="{{ movie.id }}">
+                    <button type="submit" name="rating" value="{{ i }}" class="card-link btn btn-link">
+                        <img src="{{ url_for('static', filename='images/' + i|to_star_image) }}" alt="{{ i }}">
+                    </button>
+                </form>
+            {% endfor %}
+            {% for rating in user_ratings %}
+                {% if rating.movie_id == movie.id %} 
+                        {% for rating in user_ratings %}
+                            {% set rating_value = rating.rating|int %} 
+                            <span>Your rating: {{ rating_value }}
+                                {% if rating_value == 1 %}
+                                    <img src="../static/images/onestar.png">
+                                {% elif rating_value == 2 %}
+                                    <img src="../static/images/onestar.png">
+                                {% elif rating_value == 3 %}
+                                    <img src="../static/images/onestar.png">
+                                {% elif rating_value == 4 %}
+                                    <img src="../static/images/onestar.png">
+                                {% elif rating_value == 5 %}
+                                    <img src="../static/images/onestar.png">
+                                {% endif %}
+                            </span>
+                        {% endfor %}
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+{% endfor %}

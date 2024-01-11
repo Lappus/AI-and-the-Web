@@ -6,8 +6,117 @@
 {% block title %} {{ user_manager.USER_APP_NAME }} {% endblock %}
 {% block content %}
     <h1 class="text-center">HOME PAGE</h1>
-    <div class="col-md-8 offset-md-2 info">
-        <p class="btn btn-md text-center"><a href={{ url_for('movies_page') }}>Movies Overview</a></p>
-        <p class="btn btn-md text-center"><a href={{ url_for('recommendations') }}>Recommendations For You</a></p>
+    
+    <form class="form-inline" method="post" action="/" autocomplete="off">
+        <div class="form-group">
+            <input type="text" class="form-control search-bar" name="search" placeholder="Search movies">
+        </div>
+        <button type="submit" class="btn btn-primary search-bar">Search</button>
+    </form>
+
+    <!-- Conditional "not found" message -->
+    {% if not movie_found and search_performed%}
+        <div class="not-found-message">
+            <p>Oops, sorry this movie doesn't seem to be in our database. Are you sure you spelled it correctly?</p>
+        </div>
+    {% endif %}
+
+    <!-- Carousel Title -->
+    {% if movie_found and search_performed %}
+        <div class="col-md-8 offset-md-2">
+            <h2 class="carousel-title">This is what we found for your search:</h2>
+        </div>
+    {% else %}
+        <div class="col-md-8 offset-md-2">
+            <h2 class="carousel-title">Current Best Ranked Movies:</h2>
+        </div>
+    {% endif %}
+
+    <div id="movieCarousel" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner">
+            {% for m in display_movies %}
+            <div class="carousel-item {% if loop.first %}active{% endif %}">
+                <div class="d-flex align-items-center" style="background-color: #f8f9fa; min-height: 200px;">
+                    <div class="container">
+                        <h5>{{ m.title }}</h5>
+                        <p>
+                            {% for g in m.genres %}
+                            <span class="badge badge-secondary">{{ g.genre }}</span>
+                            {% endfor %}
+                        </p>
+                        <p>
+                            {% for movieId, link in links.items() %}
+                                {% if movieId == m.id %}
+                                    {% for l in link %}
+                                    <a class="label label-default" href ={{ "https://www.imdb.com/title/tt0" + l.imdb_id|string}}  >{{ "https://www.imdb.com/title/tt0" + l.imdb_id|string }}</a>
+        
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                        </p>
+                        <p>
+                            {% for movieId, link in links.items() %}
+                                {% if movieId == m.id %}
+                                    {% for l in link %}
+                                    <a class="label label-default" href ={{ "https://www.themoviedb.org/movie/" + l.tmdb_id|string}}  >{{ "https://www.themoviedb.org/movie/" + l.tmdb|string }}</a>
+        
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                        <p>
+                            {% for movieId, rating in average_ratings.items() %}
+                                {% if movieId == m.id %}
+                                    {% if rating is not none %}
+                                        <span style="color: black;">{{ rating.rating }}</span>
+                                        {% if rating.rating is not none and rating.rating < 1.5  %}
+                                            <img src="../static/images/onestar.png" alt="1">
+                                        {% elif rating.rating >= 1.5 and rating.rating < 2.5 %}
+                                            <img src="../static/images/twostars.png" alt=2">
+                                        {% elif rating.rating >= 2.5 and rating.rating < 3.5 %}
+                                            <img src="../static/images/threestars.png" alt="3">
+                                        {% elif rating.rating >= 3.5 and rating.rating < 4.5 %}
+                                            <img src="../static/images/fourstars.png" alt="4">
+                                        {% elif rating.rating >= 4.5 and rating.rating < 5.1 %}
+                                            <img src="../static/images/fivestars.png" alt="5">
+                                        {% endif %}
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        </p>
+                        {% if current_user.is_authenticated %}
+                        <div class="carousel-footer">
+                            <form method="post" action="{{ url_for('movies_page') }}">
+                                <input type="hidden" name="movie_id" value="{{ m.id }}">
+                                {% for i in range(1, 6) %}
+                                    <button type="submit" name="rating" value="{{ i }}" class="btn btn-link rating-button">
+                                        {{ i }} Star{{ 's' if i > 1 else '' }}
+                                    </button>
+                                {% endfor %}
+                            </form>
+                        </div>
+                    {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <a class="carousel-control-prev" href="#movieCarousel" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#movieCarousel" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
     </div>
+
+    <div class="col-md-8 offset-md-2 info">
+        <div class="button-container">
+            <p class="btn btn-md text-center"><a href={{ url_for('movies_page') }}>Movies Overview</a></p>
+            <p class="btn btn-md text-center"><a href={{ url_for('recommendations') }}>Recommendations For You</a></p>
+        </div>
+    </div>
+
+
 {% endblock %}

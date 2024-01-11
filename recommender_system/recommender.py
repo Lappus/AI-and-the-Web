@@ -1,6 +1,6 @@
 # Contains parts from: https://flask-user.readthedocs.io/en/latest/quickstart_app.html
 
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template, redirect, url_for, request, make_response
 from flask_user import login_required, UserManager, current_user
 from surprise import Dataset
 from surprise import Reader
@@ -51,12 +51,80 @@ def initdb_command():
     check_and_read_data(db_session = db.session)
     print('Initialized the database.')
 
-# The Home page is accessible to anyone
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def home_page():
-    # render home.html template
-    return render_template("home.html")
+    search_performed = False
+    movie_found = True
+    movies = None
+    links = {}
+    average_ratings = {}
 
+    #print("search contents:", request.form['search'].strip())
+
+    # Handle search submission
+    if request.method == 'POST' and 'search' in request.form and request.form['search'].strip():
+        search_performed = True
+        search_query = request.form.get('search')
+        search_query = re.sub('[^A-Za-z0-9]+', '', search_query)
+        movies = Movie.query.filter(Movie.title.like(f'%{search_query}%')).all()
+        movie_found = bool(movies)
+
+    # If there's no search or if search returns no results, display top movies
+    if not movies:
+        top_movies = db.session.query(AverageRating).order_by(AverageRating.rating.desc()).limit(10).all()
+        extracted_ids = [ar.movie_id for ar in top_movies]
+        movies = [Movie.query.filter_by(id=id).first() for id in extracted_ids if Movie.query.filter_by(id=id).first()]
+
+    # Collect additional information for each movie
+    for m in movies:
+        links[m.id] = Link.query.filter_by(movie_id=m.id).limit(10).all()
+        average_ratings[m.id] = AverageRating.query.filter_by(movie_id=m.id).first()
+
+    response = make_response(render_template("home.html", display_movies=movies, 
+                                        movie_found=movie_found,
+                                        search_performed=search_performed, 
+                                        links=links, 
+                                        average_ratings=average_ratings))
+
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
+
+@app.route('/movies', methods=['GET', 'POST'])
+@login_required
+def movies_page():
+    # Initialize variables
+    user_id = current_user.id
+    movies = None
+    selected_tab = "alphabetical"  # Default tab
+    links = {}
+    average_ratings = {}
+
+    # Fetch user ratings for displaying user's rating
+    user_ratings = Rating.query.filter_by(user_id=user_id).all()
+
+    # Handle POST requests for genre filtering
+    if request.method == 'POST' and 'genre' in request.form:
+        selected_genre = request.form.get('genre')
+        selected_tab = "genre"
+        movies = Movie.query.join(MovieGenre).filter(MovieGenre.genre == selected_genre).all()
+
+    # Fetch movies based on selected tab
+    if selected_tab == "alphabetical":
+        movies = Movie.query.order_by(Movie.title).all()
+    elif selected_tab == "ratings":
+        top_movies = db.session.query(AverageRating).order_by(AverageRating.rating.desc()).limit(10).all()
+        movie_ids = [ar.movie_id for ar in top_movies]
+        movies = [Movie.query.filter_by(id=id).first() for id in movie_ids]
+
+    # Prepare additional information for movies
+    links[movies.id] = Link.query.filter_by(movie_id=movies.id).limit(10).all() 
+    average_ratings[movies.id] = AverageRating.query.filter_by(movie_id=movies.id).first()
+
+    return render_template("movies.html", movies=movies, links=links, average_ratings=average_ratings, user_ratings=user_ratings, selected_tab=selected_tab)
+
+"""# Movies view
 @app.route('/movies', methods=['GET', 'POST'])
 @login_required  # User must be authenticated
 def movies_page():
@@ -72,8 +140,6 @@ def movies_page():
         tags.update({movie.id: Tag.query.filter_by(movie_id=movie.id).limit(10).all()})
         links.update({movie.id: Link.query.filter_by(movie_id=movie.id).limit(10).all()})
         average_ratings.update({movie.id: AverageRating.query.filter_by(movie_id=movie.id).first()})
-
-
 
     if request.method == 'POST':
         if 'movie_id' in request.form:
@@ -98,30 +164,17 @@ def movies_page():
 
             db.session.commit()
             return render_template('rating.html', rating_value=rating_value, title=title[0])
-        if 'search' in request.form:
-            # Handle search submission
-            search_query = request.form.get('search')
-            search_query = re.sub('[^A-Za-z0-9]+', '', search_query)
-            movies = Movie.query.filter(Movie.title.like(f'%{search_query}%')).all()
-            tags = {}
-            links = {}
-            average_ratings = {}
-            for movie in movies:
-                tags.update({movie.id: Tag.query.filter_by(movie_id=movie.id).limit(10).all()})
-                links.update({movie.id: Link.query.filter_by(movie_id=movie.id).limit(10).all()})
-                average_ratings.update({movie.id: AverageRating.query.filter_by(movie_id=movie.id).first()})
-            return render_template("movies.html", movies=movies, tags=tags, links=links, average_ratings=average_ratings, user_id=user_id)
     
 
     return render_template("movies.html", movies=movies, tags=tags, links=links, average_ratings=average_ratings, user_id=user_id, user_ratings = user_ratings)
-
+"""
 @app.route('/recommendations', methods=['GET', 'POST'])
 @login_required  # User must be authenticated
 def recommendations():
 
     # NOTE_ this is currently done with a set user ID = 1 for testing purposes
     your_user_id = current_user  # later on current_user would be used 
-
+    wanted_genre = None
     ratings = Rating.query.all()
 
     # Create a pandas DataFrame from the list of tuples
@@ -138,7 +191,7 @@ def recommendations():
     print(type(rated_movies))
     print(rated_movies.__len__())
 
-    if rated_movies.__len__() >= 60:
+    if rated_movies.__len__() >= 20:
         if request.method == 'POST':
             # get the genre from the html Code
             wanted_genre = request.form.get('genre')
@@ -236,8 +289,29 @@ def get_movie_names(movie_ids):
             movie_names.append(movie.title)
     return movie_names 
 
+def submit_rating(user_id):
+    movie_id = request.form.get('movie_id')
+    rating_value = request.form.get('rating')
 
-calc_average_rating()
+    # Check if the user has already rated the movie
+    existing_rating = Rating.query.filter_by(user_id=user_id, movie_id=movie_id).first()
+
+    if existing_rating:
+        # Update the existing rating
+        existing_rating.rating = rating_value
+    else:
+        # Insert a new rating
+        new_rating = Rating(user_id=user_id, movie_id=movie_id, rating=rating_value)
+        db.session.add(new_rating)
+    
+    db.session.commit()
+
+    # Fetch the movie title for the response
+    title = db.session.query(Movie.title).filter(Movie.id == movie_id).first()[0]
+    return render_template('rating.html', rating_value=rating_value, title=title)
+
+
+#calc_average_rating()
 #initdb_command()
 
 # Start development web server

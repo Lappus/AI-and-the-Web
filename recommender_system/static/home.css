@@ -3,12 +3,32 @@
     background-color: #a9a9a9; 
     padding: 15px;
     border-radius: 15px;
+    margin-top: 40px;
 }
 
 /* Styling for the heading */
 h1.text-center {
     color: #bdbbbd; 
-    margin-bottom: 50px; /* Space below the heading */
+    margin-bottom: 30px; /* Space below the heading */
+}
+
+.not-found-message {
+    text-align: center; /* Center text horizontally */
+    margin-top: 5px; /* Adjust top margin as needed */
+    margin-bottom: 5px; /* Adjust bottom margin as needed */
+    /* Add any additional styling as needed */
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-around; /* This will space out the buttons evenly */
+}
+
+/* If you want the buttons to have a specific width, you can add this */
+.button-container .btn {
+    flex: 1; /* This will make each button take equal space */
+    margin: 0 10px; /* Adjust spacing between buttons */
+    margin-top: 15px;
 }
 
 /* Styling for buttons */
@@ -17,6 +37,12 @@ h1.text-center {
     width: 100%; /* Full width */
     margin-bottom: 20px; /* Space between buttons */
     background-color: #210b26; 
+}
+
+/* Style the search button */
+.btn-primary {
+    background-color: #210b26; 
+    border-color: #210b26; 
 }
 
 .info .btn a {
@@ -28,4 +54,76 @@ h1.text-center {
 
 .info .btn a:hover {
     background-color: #120615 /* Slightly darker on hover */
+}
+
+.form-inline {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+/* Styling for the carousel title */
+.carousel-title {
+    margin-top: 20px;
+    color: #bdbbbd; /* Adjust the color as needed */
+    font-size: 18px; /* Adjust the font size as needed */
+}
+
+.search-bar {
+    height: 50px; /* Increase the height */
+    font-size: 18px; /* Increase the font size */
+    padding: 10px 20px; /* Adjust padding for better text visibility */
+    /* Add any additional styling as needed */
+}
+
+#movieCarousel .carousel.slide.point-event {
+    background-color: red !important;
+}
+
+/* Styling for the container inside each carousel item */
+#movieCarousel .carousel-item .container {
+    margin-top: 3px;
+    min-height: 200px;
+    background-color: #e2dfe2; /* Semi-transparent or solid background */
+    color: #535253;
+    padding: 15px;
+    border-radius: 15px;
+    margin: 0 auto; /* Center the container */
+    max-width: 80%; /* Maximum width of the content */
+    text-align: center; /* Center text inside the container */
+}
+
+/* Ensure carousel controls are visible */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-image: none; /* Remove default background images */
+}
+
+.carousel-control-prev-icon:after,
+.carousel-control-next-icon:after {
+    content: '❮'; /* Use text character for simplicity (customize as needed) */
+    font-size: 30px;
+    color: #868484;
+}
+
+.carousel-control-next-icon:after {
+    content: '❯';
+    color: #868484;
+}
+
+/* Additional styling for visibility and alignment */
+.carousel-control-prev, .carousel-control-next {
+    align-items: center; /* Vertically center */
+}
+
+/* Inside your home.css */
+.rating-button {
+    color: #535253; /* Replace with your desired color */
+    font-size: 14px; /* Adjust size as needed */
+    /* Add other styles as needed */
+}
+
+.rating-button:hover {
+    color: #0056b3; /* Darker color for hover state */
+    /* Add other hover styles as needed */
 }
