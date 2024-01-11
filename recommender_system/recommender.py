@@ -61,14 +61,18 @@ def home_page():
 @login_required  # User must be authenticated
 def movies_page():
     # String-based templates
+    your_user_id = current_user
+    user_id = current_user.id 
     movies = Movie.query.limit(10).all()
     tags = {}
     links = {}
-    average_ratings = {}
+    average_ratings = {} 
+    user_ratings = Rating.query.filter_by(user_id=current_user.id).all()
     for movie in movies:
         tags.update({movie.id: Tag.query.filter_by(movie_id=movie.id).limit(10).all()})
         links.update({movie.id: Link.query.filter_by(movie_id=movie.id).limit(10).all()})
         average_ratings.update({movie.id: AverageRating.query.filter_by(movie_id=movie.id).first()})
+
 
 
     if request.method == 'POST':
@@ -106,9 +110,10 @@ def movies_page():
                 tags.update({movie.id: Tag.query.filter_by(movie_id=movie.id).limit(10).all()})
                 links.update({movie.id: Link.query.filter_by(movie_id=movie.id).limit(10).all()})
                 average_ratings.update({movie.id: AverageRating.query.filter_by(movie_id=movie.id).first()})
-        return render_template("movies.html", movies=movies, tags=tags, links=links, average_ratings=average_ratings)
+            return render_template("movies.html", movies=movies, tags=tags, links=links, average_ratings=average_ratings, user_id=user_id)
     
-    return render_template("movies.html", movies=movies, tags=tags, links=links, average_ratings=average_ratings)
+
+    return render_template("movies.html", movies=movies, tags=tags, links=links, average_ratings=average_ratings, user_id=user_id, user_ratings = user_ratings)
 
 @app.route('/recommendations', methods=['GET', 'POST'])
 @login_required  # User must be authenticated
