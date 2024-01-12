@@ -94,35 +94,40 @@ def home_page():
 @app.route('/movies', methods=['GET', 'POST'])
 @login_required
 def movies_page():
-    # Initialize variables
     user_id = current_user.id
     movies = None
-    selected_tab = "alphabetical"  # Default tab
-    links = {}
-    average_ratings = {}
+    selected_tab = None  # No default tab
+    genres = set([genre.genre for genre in MovieGenre.query.all()])  # Retrieve all genres
 
-    # Fetch user ratings for displaying user's rating
-    user_ratings = Rating.query.filter_by(user_id=user_id).all()
+    # Check for tab selection
+    if request.method == 'GET':
+        sort_arg = request.args.get('sort')
+        genre_arg = request.args.get('genre')
+        print("sort_arg:", sort_arg)
+        print("genre_arg:", genre_arg)
 
-    # Handle POST requests for genre filtering
-    if request.method == 'POST' and 'genre' in request.form:
-        selected_genre = request.form.get('genre')
-        selected_tab = "genre"
-        movies = Movie.query.join(MovieGenre).filter(MovieGenre.genre == selected_genre).all()
+        if sort_arg == "genre":
+            movies = Movie.query.join(MovieGenre).filter(MovieGenre.genre == genre_arg).all()
+            selected_tab = 'genre'
+        elif sort_arg == 'a_to_z':
+            movies = Movie.query.order_by(Movie.title).all()
+            selected_tab = 'a_to_z'
+        elif sort_arg == 'ratings':
+            movies = Movie.query.join(AverageRating).order_by(AverageRating.rating.desc()).all()
+            selected_tab = 'ratings'
 
-    # Fetch movies based on selected tab
-    if selected_tab == "alphabetical":
-        movies = Movie.query.order_by(Movie.title).all()
-    elif selected_tab == "ratings":
-        top_movies = db.session.query(AverageRating).order_by(AverageRating.rating.desc()).limit(10).all()
-        movie_ids = [ar.movie_id for ar in top_movies]
-        movies = [Movie.query.filter_by(id=id).first() for id in movie_ids]
+    # Handle rating submission
+    if request.method == 'POST' and 'movie_id' in request.form:
+        submit_rating(request, user_id)
 
-    # Prepare additional information for movies
-    links[movies.id] = Link.query.filter_by(movie_id=movies.id).limit(10).all() 
-    average_ratings[movies.id] = AverageRating.query.filter_by(movie_id=movies.id).first()
+    # If no movies or tab is selected, no movies will be displayed
+    additional_data = retrieve_additional_movie_data(movies, user_id) if movies else {}
+    print("movies outside:", movies)
+    print("genres outside:", genres)
+    print("selected-tab:", selected_tab)
 
-    return render_template("movies.html", movies=movies, links=links, average_ratings=average_ratings, user_ratings=user_ratings, selected_tab=selected_tab)
+    return render_template("movies.html", movies=movies, user_id=user_id, genres=genres, 
+                            selected_tab=selected_tab, **additional_data)
 
 """# Movies view
 @app.route('/movies', methods=['GET', 'POST'])
@@ -289,7 +294,7 @@ def get_movie_names(movie_ids):
             movie_names.append(movie.title)
     return movie_names 
 
-def submit_rating(user_id):
+def submit_rating(request, user_id):
     movie_id = request.form.get('movie_id')
     rating_value = request.form.get('rating')
 
@@ -307,8 +312,40 @@ def submit_rating(user_id):
     db.session.commit()
 
     # Fetch the movie title for the response
-    title = db.session.query(Movie.title).filter(Movie.id == movie_id).first()[0]
-    return render_template('rating.html', rating_value=rating_value, title=title)
+    #title = db.session.query(Movie.title).filter(Movie.id == movie_id).first()[0]
+    #return render_template('rating.html', rating_value=rating_value, title=title)
+    return redirect(url_for('movies_page'))
+
+def retrieve_additional_movie_data(movies, user_id):
+    """
+    Retrieves additional data for a list of movies, such as tags, links, average ratings,
+    and user-specific ratings.
+
+    :param movies: List of Movie objects.
+    :param user_id: ID of the current user (can be None if user is not logged in).
+    :return: Dictionary containing tags, links, average ratings, and user ratings for each movie.
+    """
+    tags = {}
+    links = {}
+    average_ratings = {}
+    user_ratings = {}
+
+    for movie in movies:
+        movie_id = movie.id
+        tags[movie_id] = Tag.query.filter_by(movie_id=movie_id).all()
+        links[movie_id] = Link.query.filter_by(movie_id=movie_id).all()
+        average_ratings[movie_id] = AverageRating.query.filter_by(movie_id=movie_id).first()
+
+        if user_id is not None:
+            user_rating = Rating.query.filter_by(user_id=user_id, movie_id=movie_id).first()
+            user_ratings[movie_id] = user_rating.rating if user_rating else None
+
+    return {
+        'tags': tags,
+        'links': links,
+        'average_ratings': average_ratings,
+        'user_ratings': user_ratings
+    }
 
 
 #calc_average_rating()

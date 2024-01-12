@@ -10,46 +10,32 @@
         <!-- Tab navigation -->
         <ul class="nav nav-tabs" id="moviesTab" role="tablist">
             <li class="nav-item">
-                <a class="nav-link active" id="genres-tab" data-toggle="tab" href="#genres" role="tab" aria-controls="genres" aria-selected="true">Genres</a>
+                <a class="nav-link {{ 'active' if selected_tab == 'genre' }}" href="{{ url_for('movies_page', sort='genre') }}">Genres</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="alphabetical-tab" data-toggle="tab" href="#alphabetical" role="tab" aria-controls="alphabetical" aria-selected="false">Movies from A to Z</a>
+                <a class="nav-link {{ 'active' if selected_tab == 'a_to_z' }}" href="{{ url_for('movies_page', sort='a_to_z') }}">Movies from A to Z</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="ratings-tab" data-toggle="tab" href="#ratings" role="tab" aria-controls="ratings" aria-selected="false">Movies according to Ratings</a>
+                <a class="nav-link {{ 'active' if selected_tab == 'ratings' }}" href="{{ url_for('movies_page', sort='ratings') }}">Movies according to Ratings</a>
             </li>
         </ul>
 
         <!-- Tab content -->
-        <div class="tab-content" id="moviesTabContent">
-            <!-- Genres Tab -->
-            <div class="tab-pane fade show active" id="genres" role="tabpanel" aria-labelledby="genres-tab">
-                <!-- Genre Buttons -->
+        <div class="categories">
+            <form method="post" action="{{ url_for('movies_page') }}">
                 {% for genre in genres %}
-                    <button type="button" class="btn btn-secondary" onclick="location.href='{{ url_for('movies_page', genre=genre) }}'">{{ genre }}</button>
+                    <button type="submit" name="genre" value="{{ genre }}" class="card-link btn btn-link">{{ genre }}</button>
                 {% endfor %}
-            </div>
-
-            <!-- Alphabetical Tab -->
-            <div class="tab-pane fade" id="alphabetical" role="tabpanel" aria-labelledby="alphabetical-tab">
-                <!-- Include movie_display.html with movies sorted alphabetically -->
-                {% with movies=alphabetical_movies %}
-                    {% include 'movie_display.html' %}
-                {% endwith %}
-            </div>
-
-            <!-- Ratings Tab -->
-            <div class="tab-pane fade" id="ratings" role="tabpanel" aria-labelledby="ratings-tab">
-                <!-- Include movie_display.html with movies sorted by ratings -->
-                {% with movies=rating_sorted_movies %}
-                    {% include 'movie_display.html' %}
-                {% endwith %}
-            </div>
+            </form>
         </div>
+
+        {% include 'movies_display.html' %}
+        
     </div>
 
     <!-- Bootstrap JavaScript for tabs -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
-    
+
 {% endblock %}
+
