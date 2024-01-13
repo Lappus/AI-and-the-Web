@@ -1,6 +1,6 @@
 # Contains parts from: https://flask-user.readthedocs.io/en/latest/quickstart_app.html
 
-from flask import Flask, render_template, redirect, url_for, request, make_response
+from flask import Flask, render_template, redirect, url_for, request, make_response, session
 from flask_user import login_required, UserManager, current_user
 from surprise import Dataset
 from surprise import Reader
@@ -56,8 +56,6 @@ def home_page():
     search_performed = False
     movie_found = True
     movies = None
-    links = {}
-    average_ratings = {}
 
     #print("search contents:", request.form['search'].strip())
 
@@ -76,15 +74,22 @@ def home_page():
         movies = [Movie.query.filter_by(id=id).first() for id in extracted_ids if Movie.query.filter_by(id=id).first()]
 
     # Collect additional information for each movie
-    for m in movies:
-        links[m.id] = Link.query.filter_by(movie_id=m.id).limit(10).all()
-        average_ratings[m.id] = AverageRating.query.filter_by(movie_id=m.id).first()
+    # If no movies or tab is selected, no movies will be displayed
+    user_id = current_user.id if current_user.is_authenticated else None
+    additional_data = retrieve_additional_movie_data(movies, user_id) if movies else {}
+    # Handle rating submission
+    if request.method == 'POST' and 'movie_id' in request.form and user_id:
+        submit_rating(request, user_id)
 
-    response = make_response(render_template("home.html", display_movies=movies, 
+    # Retrieve the ID of the rated movie, if any
+    rated_movie_id = session.pop('rated_movie_id', None)
+    print( "rated_movie_id", rated_movie_id)
+
+    response = make_response(render_template("home.html", movies=movies, 
                                         movie_found=movie_found,
                                         search_performed=search_performed, 
-                                        links=links, 
-                                        average_ratings=average_ratings))
+                                        **additional_data,
+                                        rated_movie_id=rated_movie_id))
 
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     response.headers["Pragma"] = "no-cache"
@@ -96,25 +101,37 @@ def home_page():
 def movies_page():
     user_id = current_user.id
     movies = None
-    selected_tab = None  # No default tab
+    selected_tab = "genre" # Default tab
     genres = set([genre.genre for genre in MovieGenre.query.all()])  # Retrieve all genres
 
-    # Check for tab selection
-    if request.method == 'GET':
-        sort_arg = request.args.get('sort')
-        genre_arg = request.args.get('genre')
-        print("sort_arg:", sort_arg)
-        print("genre_arg:", genre_arg)
 
-        if sort_arg == "genre":
+    selected_tab = "genre" # Default tab
+    # Check for tab and genre selection
+    sort_arg = request.args.get('sort') or session.get('sort_arg')
+    genre_arg = request.args.get('genre')
+
+    if sort_arg:
+            session['sort_arg'] = sort_arg  # Store sort_arg in session
+
+    print("genre_arg2:", genre_arg)
+    print("sort_arg:", sort_arg)
+
+    if sort_arg == "genre":
+        selected_tab = 'genre'
+        if genre_arg:
+            print("here")
+            # if genre is selected show movies of respective genre
             movies = Movie.query.join(MovieGenre).filter(MovieGenre.genre == genre_arg).all()
-            selected_tab = 'genre'
-        elif sort_arg == 'a_to_z':
-            movies = Movie.query.order_by(Movie.title).all()
-            selected_tab = 'a_to_z'
-        elif sort_arg == 'ratings':
-            movies = Movie.query.join(AverageRating).order_by(AverageRating.rating.desc()).all()
-            selected_tab = 'ratings'
+        else: 
+            # if no genre is selected show all movies
+            movies = Movie.query.join(MovieGenre).all()
+        print("genre_arg1:", genre_arg)
+    elif sort_arg == 'a_to_z':
+        movies = Movie.query.order_by(Movie.title).all()
+        selected_tab = 'a_to_z'
+    elif sort_arg == 'ratings':
+        movies = Movie.query.join(AverageRating).order_by(AverageRating.rating.desc()).all()
+        selected_tab = 'ratings'
 
     # Handle rating submission
     if request.method == 'POST' and 'movie_id' in request.form:
@@ -308,12 +325,16 @@ def submit_rating(request, user_id):
         # Insert a new rating
         new_rating = Rating(user_id=user_id, movie_id=movie_id, rating=rating_value)
         db.session.add(new_rating)
+
+    # Set session variable to indicate the rated movie
+    session['rated_movie_id'] = movie_id
     
     db.session.commit()
 
     # Fetch the movie title for the response
     #title = db.session.query(Movie.title).filter(Movie.id == movie_id).first()[0]
     #return render_template('rating.html', rating_value=rating_value, title=title)
+    # Redirect to the referring page
     return redirect(url_for('movies_page'))
 
 def retrieve_additional_movie_data(movies, user_id):

@@ -19,6 +19,13 @@ h1.text-center {
     /* Add any additional styling as needed */
 }
 
+.rating-message {
+    text-align: center; /* Center text horizontally */
+    margin-top: 5px; /* Adjust top margin as needed */
+    margin-bottom: 5px; /* Adjust bottom margin as needed */
+    /* Add any additional styling as needed */
+}
+
 .button-container {
     display: flex;
     justify-content: space-around; /* This will space out the buttons evenly */

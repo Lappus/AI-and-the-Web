@@ -43,6 +43,7 @@
 				</nav>
 			</div>
         </div>
+    {% endblock %}
 
     <div id="main-div" class="with-margins">
     {# One-time system messages called Flash messages #}
@@ -66,14 +67,12 @@
     
         </div>
     </div>
-    {% endblock %}
     
-    <br/>
-        <hr class="no-margins"/>
-        <div id="footer-div" class="clearfix with-margins" style="color: white;">
-            <div class="pull-left">{{ user_manager.USER_APP_NAME }} {{ user_manager.USER_APP_VERSION }}</div>
-            <div class="pull-right">Just practicing... CogSci Osnabrück 2023</div>
-        </div>
+    <hr class="no-margins"/>
+    <div id="footer-div" class="clearfix with-margins" style="color: white;">
+        <div class="pull-left">{{ user_manager.USER_APP_NAME }} {{ user_manager.USER_APP_VERSION }}</div>
+        <div class="pull-right">Just practicing... CogSci Osnabrück 2023</div>
+    </div>
 
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
