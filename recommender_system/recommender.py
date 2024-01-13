@@ -51,145 +51,132 @@ def initdb_command():
     check_and_read_data(db_session = db.session)
     print('Initialized the database.')
 
+################################################################ HOME PAGE ################################################################
+    
 @app.route('/', methods=['GET', 'POST'])
 def home_page():
-    search_performed = False
-    movie_found = True
-    movies = None
+    """
+    Route for the home page of the application. 
 
-    #print("search contents:", request.form['search'].strip())
+    This route handles both GET and POST requests. It serves two primary functions: 
+    1. Search: When a search query is posted, it filters the movies based on the search criteria. 
+    2. Display: In the absence of a search query or when the search returns no results, 
+       it displays the top 10 movies based on average ratings.
+
+    On POST requests, this route also handles movie rating submissions made by authenticated users.
+
+    The function retrieves additional data for each movie, such as tags, links, and ratings. 
+    It also ensures that the home page does not cache the content to reflect real-time data.
+
+    Returns:
+        Response: A response object that renders the 'home.html' template with the necessary context, 
+                  including movies, search flags, additional movie data, and the ID of the recently rated movie.
+    """
+    search_performed = False  
+    movie_found = True  
+    movies = None  
 
     # Handle search submission
     if request.method == 'POST' and 'search' in request.form and request.form['search'].strip():
         search_performed = True
         search_query = request.form.get('search')
-        search_query = re.sub('[^A-Za-z0-9]+', '', search_query)
+        search_query = re.sub('[^A-Za-z0-9]+', '', search_query)  # Sanitize search query
         movies = Movie.query.filter(Movie.title.like(f'%{search_query}%')).all()
-        movie_found = bool(movies)
+        movie_found = bool(movies)  # Check if any movie is found
 
-    # If there's no search or if search returns no results, display top movies
+    # Display top movies if no search or search returns no results
     if not movies:
         top_movies = db.session.query(AverageRating).order_by(AverageRating.rating.desc()).limit(10).all()
         extracted_ids = [ar.movie_id for ar in top_movies]
-        movies = [Movie.query.filter_by(id=id).first() for id in extracted_ids if Movie.query.filter_by(id=id).first()]
+        movies = [Movie.query.filter_by(id=id).first() for id in extracted_ids]
 
     # Collect additional information for each movie
-    # If no movies or tab is selected, no movies will be displayed
     user_id = current_user.id if current_user.is_authenticated else None
     additional_data = retrieve_additional_movie_data(movies, user_id) if movies else {}
-    # Handle rating submission
+
+    # Handle movie rating submission
     if request.method == 'POST' and 'movie_id' in request.form and user_id:
         submit_rating(request, user_id)
 
-    # Retrieve the ID of the rated movie, if any
+    # Retrieve the ID of the rated movie, if any, and clear it from session
     rated_movie_id = session.pop('rated_movie_id', None)
-    print( "rated_movie_id", rated_movie_id)
 
+    # Render the home page template with the necessary data
     response = make_response(render_template("home.html", movies=movies, 
                                         movie_found=movie_found,
                                         search_performed=search_performed, 
                                         **additional_data,
                                         rated_movie_id=rated_movie_id))
 
+    # Set cache control headers to prevent caching
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     response.headers["Pragma"] = "no-cache"
     response.headers["Expires"] = "0"
     return response
 
+################################################################ MOVIES OVERVIEW ################################################################
+
 @app.route('/movies', methods=['GET', 'POST'])
 @login_required
 def movies_page():
+    """
+    Route for the movies page of the application, accessible only to logged-in users.
+
+    This route handles both GET and POST requests. It serves the following primary functions:
+    1. Display Movies: Based on the selected tab ('genre', 'a_to_z', or 'ratings'), it displays movies accordingly.
+    2. Genre Filtering: If a specific genre is selected, only movies of that genre are displayed.
+    3. Movie Ratings: Handles movie rating submissions by the user.
+
+    The function retrieves additional data for each movie, such as tags, links, and ratings. 
+    It maintains the state of the selected tab using session storage.
+
+    Returns:
+        Response: A response object that renders the 'movies.html' template with the necessary context, 
+                  including movies, genre data, selected tab, and additional movie data.
+    """
     user_id = current_user.id
     movies = None
-    selected_tab = "genre" # Default tab
-    genres = set([genre.genre for genre in MovieGenre.query.all()])  # Retrieve all genres
+    selected_tab = "genre"  # Initialize with a default tab
 
+    # Retrieve all genres from the database
+    genres = set([genre.genre for genre in MovieGenre.query.all()])
 
-    selected_tab = "genre" # Default tab
-    # Check for tab and genre selection
+    # Get the sorting argument from URL or session
     sort_arg = request.args.get('sort') or session.get('sort_arg')
     genre_arg = request.args.get('genre')
 
+    # Store the current sorting argument in session for persistence
     if sort_arg:
-            session['sort_arg'] = sort_arg  # Store sort_arg in session
+        session['sort_arg'] = sort_arg
 
-    print("genre_arg2:", genre_arg)
-    print("sort_arg:", sort_arg)
-
+    # Display movies based on selected tab and genre
     if sort_arg == "genre":
         selected_tab = 'genre'
-        if genre_arg:
-            print("here")
-            # if genre is selected show movies of respective genre
-            movies = Movie.query.join(MovieGenre).filter(MovieGenre.genre == genre_arg).all()
-        else: 
-            # if no genre is selected show all movies
-            movies = Movie.query.join(MovieGenre).all()
-        print("genre_arg1:", genre_arg)
+        # Filter movies by selected genre, if any
+        movies = Movie.query.join(MovieGenre).filter(MovieGenre.genre == genre_arg).all() if genre_arg else Movie.query.join(MovieGenre).all()
     elif sort_arg == 'a_to_z':
+        # Sort movies alphabetically
         movies = Movie.query.order_by(Movie.title).all()
         selected_tab = 'a_to_z'
     elif sort_arg == 'ratings':
+        # Sort movies by ratings
         movies = Movie.query.join(AverageRating).order_by(AverageRating.rating.desc()).all()
         selected_tab = 'ratings'
 
-    # Handle rating submission
+    # Handle movie rating submission by the user
     if request.method == 'POST' and 'movie_id' in request.form:
         submit_rating(request, user_id)
 
-    # If no movies or tab is selected, no movies will be displayed
+    # Retrieve additional data for movies such as tags, links, and user-specific ratings
     additional_data = retrieve_additional_movie_data(movies, user_id) if movies else {}
-    print("movies outside:", movies)
-    print("genres outside:", genres)
-    print("selected-tab:", selected_tab)
-
-    return render_template("movies.html", movies=movies, user_id=user_id, genres=genres, 
-                            selected_tab=selected_tab, **additional_data)
-
-"""# Movies view
-@app.route('/movies', methods=['GET', 'POST'])
-@login_required  # User must be authenticated
-def movies_page():
-    # String-based templates
-    your_user_id = current_user
-    user_id = current_user.id 
-    movies = Movie.query.limit(10).all()
-    tags = {}
-    links = {}
-    average_ratings = {} 
-    user_ratings = Rating.query.filter_by(user_id=current_user.id).all()
-    for movie in movies:
-        tags.update({movie.id: Tag.query.filter_by(movie_id=movie.id).limit(10).all()})
-        links.update({movie.id: Link.query.filter_by(movie_id=movie.id).limit(10).all()})
-        average_ratings.update({movie.id: AverageRating.query.filter_by(movie_id=movie.id).first()})
-
-    if request.method == 'POST':
-        if 'movie_id' in request.form:
-            # Handle rating submission
-            movie_id = request.form.get('movie_id')
-            rating_value = request.form.get('rating')
-            user_id = current_user.id  
-
-            # Check if the user has already rated the movie
-            existing_rating = Rating.query.filter_by(user_id=user_id, movie_id=movie_id).first()
-
-            if existing_rating:
-                # Update the existing rating
-                existing_rating.rating = rating_value
-            else:
-                # Insert a new rating
-                new_rating = Rating(user_id=user_id, movie_id=movie_id, rating=rating_value)
-                db.session.add(new_rating)
-            
-            title = db.session.query(Movie.title).join(Rating).\
-                filter(Rating.movie_id == movie_id).first()
-
-            db.session.commit()
-            return render_template('rating.html', rating_value=rating_value, title=title[0])
     
+    # Render the movies page with the required data
+    return render_template("movies.html", movies=movies, 
+                           user_id=user_id, genres=genres, 
+                           selected_tab=selected_tab, **additional_data)
 
-    return render_template("movies.html", movies=movies, tags=tags, links=links, average_ratings=average_ratings, user_id=user_id, user_ratings = user_ratings)
-"""
+################################################################ RECOMMENDATIONS ################################################################
+
 @app.route('/recommendations', methods=['GET', 'POST'])
 @login_required  # User must be authenticated
 def recommendations():
