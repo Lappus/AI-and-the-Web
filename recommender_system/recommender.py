@@ -181,7 +181,6 @@ def movies_page():
 @login_required  # User must be authenticated
 def recommendations():
 
-    # NOTE_ this is currently done with a set user ID = 1 for testing purposes
     your_user_id = current_user  # later on current_user would be used 
     wanted_genre = None
     ratings = Rating.query.all()
@@ -213,14 +212,21 @@ def recommendations():
             # get all movies that the user hasn't rated and also that have the wanted genre
             unrated_movies_with_genre = db.session.query(Movie).filter(~Movie.id.in_(rated_movies)).\
                 filter(Movie.id.in_(movie_ids_with_genre)).all()
-        
+            print("Unrated movies with genre: ", unrated_movies_with_genre)
+            print(data)
+            print("Rated movies: ", rated_movies)
+            print("your user id: ", your_user_id)
             similar_users, predictions = recommended(data, unrated_movies_with_genre, your_user_id)
 
         else:
-
+            print(data)
+            print("Rated movies: ", rated_movies)
+            print("your user id: ", your_user_id)
             # Get all movies excluding the ones the user has rated
             unrated_movies = db.session.query(Movie).filter(~Movie.id.in_(rated_movies)).all()
             similar_users, predictions = recommended(data, unrated_movies, your_user_id)
+            print("Similar users: ", similar_users)
+            print("Predictions: ", predictions)
 
         # Get the top 3 movies with the best predictions
         top_movies = sorted(predictions.items(), key=lambda x: x[1], reverse=True)[:3]

@@ -7,8 +7,8 @@ import pandas as pd
 from models import db, User, Movie, Tag, Link, MovieGenre, Rating    
 
 def recommended(data, unrated_movies, your_user_id):
-    # Split the data into training and testing sets - right now I only work with the training set
-    trainset, testset = train_test_split(data, test_size=0.05)
+    # Split the data into training and testing sets - right now we only work with the training set
+    trainset, testset = train_test_split(data, test_size=0.001)
 
     # Use user-based collaborative filtering with KNNWithMeans
     sim_options = {
@@ -27,6 +27,7 @@ def recommended(data, unrated_movies, your_user_id):
     except ValueError:
         # Handle the case where the user ID is not in the trainset
         internal_user_id = None
+        print("User ID not found in trainset")
 
     # Get neighbors only if the user ID was found in the trainset
     similar_users = []
