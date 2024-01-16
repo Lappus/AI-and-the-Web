@@ -173,7 +173,7 @@ def movies_page():
     # Render the movies page with the required data
     return render_template("movies.html", movies=movies, 
                            user_id=user_id, genres=genres, 
-                           selected_tab=selected_tab, **additional_data)
+                           selected_tab=selected_tab, rating = False, **additional_data)
 
 ################################################################ RECOMMENDATIONS ################################################################
 
@@ -326,10 +326,13 @@ def submit_rating(request, user_id):
 
     # Fetch the movie title for the response
     #title = db.session.query(Movie.title).filter(Movie.id == movie_id).first()[0]
-    #return render_template('rating.html', rating_value=rating_value, title=title)
+    print("Rating submitted successfully")
+    return render_template("movies.html", movies=None, 
+                           user_id=user_id, genres=None, 
+                           selected_tab=None, rating=True,)
     # Redirect to the referring page
-    return redirect(url_for('movies_page'))
-
+    #return redirect(url_for('movies_page'))
+    return
 def retrieve_additional_movie_data(movies, user_id):
     """
     Retrieves additional data for a list of movies, such as tags, links, average ratings,

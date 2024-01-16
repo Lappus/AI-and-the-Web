@@ -1,91 +1,123 @@
-{% extends "flask_user_layout.html" %}
-{% block extra_css %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='movies.css') }}"/>
-{% endblock %}
+{% extends "flask_user_layout.html" %} {% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='movies.css') }}" />
+{% endblock %} {% block content %}
+<div class="container">
+  <h1 class="text-center">MOVIES</h1>
+  {% if rating %}
+  <div>
+    <h1 class="text-center">Your rating has been submitted!</h1>
+  </div>
+  {% endif %}
+</div>
+<!-- Tab navigation -->
+<ul class="nav nav-tabs" id="moviesTab" role="tablist">
+  <li class="nav-item">
+    <a
+      class="nav-link {{ 'active' if selected_tab == 'genre' }}"
+      href="{{ url_for('movies_page', sort='genre') }}"
+      >Genres</a
+    >
+  </li>
+  <li class="nav-item">
+    <a
+      class="nav-link {{ 'active' if selected_tab == 'a_to_z' }}"
+      href="{{ url_for('movies_page', sort='a_to_z') }}"
+      >Movies from A to Z</a
+    >
+  </li>
+  <li class="nav-item">
+    <a
+      class="nav-link {{ 'active' if selected_tab == 'ratings' }}"
+      href="{{ url_for('movies_page', sort='ratings') }}"
+      >Movies according to Ratings</a
+    >
+  </li>
+</ul>
 
-{% block content %}
-    <div class="container">
-        <h1 class="text-center">MOVIES</h1>
+{% if selected_tab == 'genre' %}
+<div class="categories">
+  <form method="get" action="{{ url_for('movies_page') }}">
+    {% for genre in genres %}
+    <button
+      type="submit"
+      name="genre"
+      value="{{ genre }}"
+      class="card-link btn btn-link"
+    >
+      {{ genre }}
+    </button>
+    {% endfor %}
+  </form>
+</div>
+{% endif %} {% if movies %} {% for movie in movies %}
+<div class="panel panel-default">
+  <div class="panel-heading"><b>{{ movie.title }}</b></div>
+  <div class="panel-body">
+    {% include 'movies_display.html' %}
 
-        <!-- Tab navigation -->
-        <ul class="nav nav-tabs" id="moviesTab" role="tablist">
-            <li class="nav-item">
-                <a class="nav-link {{ 'active' if selected_tab == 'genre' }}" href="{{ url_for('movies_page', sort='genre') }}">Genres</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link {{ 'active' if selected_tab == 'a_to_z' }}" href="{{ url_for('movies_page', sort='a_to_z') }}">Movies from A to Z</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link {{ 'active' if selected_tab == 'ratings' }}" href="{{ url_for('movies_page', sort='ratings') }}">Movies according to Ratings</a>
-            </li>
-        </ul>
-
-        {% if selected_tab == 'genre' %}
-            <div class="categories">
-                <form method="get" action="{{ url_for('movies_page') }}">
-                    {% for genre in genres %}
-                        <button type="submit" name="genre" value="{{ genre }}" class="card-link btn btn-link" >{{ genre }}</button>
-                    {% endfor %}
-                </form>
-            </div>
+    <div class="panel-footer">
+      Rate: {% for i in range(1, 6) %}
+      <form method="post" action="{{ url_for('movies_page') }}">
+        <input type="hidden" name="movie_id" value="{{ movie.id }}" />
+        <button
+          type="submit"
+          name="rating"
+          value="{{ i }}"
+          class="card-link btn btn-link"
+        >
+          {% if i == 1 %}
+          <img
+            src="{{ url_for('static', filename='images/onestar.png') }}"
+            alt="1 Star"
+          />
+          {% elif i == 2 %}
+          <img
+            src="{{ url_for('static', filename='images/twostars.png') }}"
+            alt="2 Stars"
+          />
+          {% elif i == 3 %}
+          <img
+            src="{{ url_for('static', filename='images/threestars.png') }}"
+            alt="3 Stars"
+          />
+          {% elif i == 4 %}
+          <img
+            src="{{ url_for('static', filename='images/fourstars.png') }}"
+            alt="4 Stars"
+          />
+          {% elif i == 5 %}
+          <img
+            src="{{ url_for('static', filename='images/fivestars.png') }}"
+            alt="5 Stars"
+          />
+          {% endif %}
+        </button>
+      </form>
+      {% endfor %} {% if user_ratings[movie.id] %}
+      <span
+        >Your rating: {{ user_ratings[movie.id] }} {% if user_ratings[movie.id]
+        == 1 %}
+        <img src="../static/images/onestar.png" />
+        {% elif user_ratings[movie.id] == 2 %}
+        <img src="../static/images/twostars.png" />
+        {% elif user_ratings[movie.id] == 3 %}
+        <img src="../static/images/threestars.png" />
+        {% elif user_ratings[movie.id] == 4 %}
+        <img src="../static/images/fourstars.png" />
+        {% elif user_ratings[movie.id] == 5 %}
+        <img src="../static/images/fivestars.png" />
         {% endif %}
+      </span>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endfor %} {% else %}
+<p>No movies to display.</p>
+{% endif %}
 
-        {% if movies %}    
-            {% for movie in movies %}
-                <div class="panel panel-default">
-                    <div class="panel-heading"><b>{{ movie.title }}</b></div>
-                    <div class="panel-body">
-
-                    {% include 'movies_display.html' %}
-
-                    <div class="panel-footer">
-                        Rate: 
-                        {% for i in range(1, 6) %}
-                            <form method="post" action="{{ url_for('movies_page') }}">
-                                <input type="hidden" name="movie_id" value="{{ movie.id }}">
-                                <button type="submit" name="rating" value="{{ i }}" class="card-link btn btn-link">
-                                    {% if i == 1 %}
-                                        <img src="{{ url_for('static', filename='images/onestar.png') }}" alt="1 Star">
-                                    {% elif i == 2 %}
-                                        <img src="{{ url_for('static', filename='images/twostars.png') }}" alt="2 Stars">
-                                    {% elif i == 3 %}
-                                        <img src="{{ url_for('static', filename='images/threestars.png') }}" alt="3 Stars">
-                                    {% elif i == 4 %}
-                                        <img src="{{ url_for('static', filename='images/fourstars.png') }}" alt="4 Stars">
-                                    {% elif i == 5 %}
-                                        <img src="{{ url_for('static', filename='images/fivestars.png') }}" alt="5 Stars">
-                                    {% endif %}
-                                </button>
-                            </form>
-                        {% endfor %}
-        
-                        {% if user_ratings[movie.id] %}
-                        <span>Your rating: {{ user_ratings[movie.id] }}
-                            {% if user_ratings[movie.id] == 1 %}
-                                <img src="../static/images/onestar.png">
-                            {% elif user_ratings[movie.id] == 2 %}
-                                <img src="../static/images/twostars.png">
-                            {% elif user_ratings[movie.id] == 3 %}
-                                <img src="../static/images/threestars.png">
-                            {% elif user_ratings[movie.id] == 4 %}
-                                <img src="../static/images/fourstars.png">
-                            {% elif user_ratings[movie.id] == 5 %}
-                                <img src="../static/images/fivestars.png">
-                            {% endif %}
-                        </span>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-            {% endfor %}
-        {% else %}
-            <p>No movies to display.</p>
-        {% endif %}
-    
-
-    <!-- Bootstrap JavaScript for tabs -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Bootstrap JavaScript for tabs -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
 
 {% endblock %}
-
