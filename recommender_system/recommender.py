@@ -187,7 +187,7 @@ def recommendations():
 
     # Create a pandas DataFrame from the list of tuples
     df = pd.DataFrame([(r.user_id, r.movie_id, r.rating) for r in ratings], columns=['user_id', 'movie_id', 'rating'])
-
+    print(df)
     # Create a Surprise Reader
     reader = Reader(rating_scale=(1, 5))
 
@@ -216,7 +216,7 @@ def recommendations():
             print(data)
             print("Rated movies: ", rated_movies)
             print("your user id: ", your_user_id)
-            similar_users, predictions = recommended(data, unrated_movies_with_genre, your_user_id)
+            similar_users, predictions = recommended(data, unrated_movies_with_genre,current_user)
 
         else:
             print(data)
@@ -224,7 +224,7 @@ def recommendations():
             print("your user id: ", your_user_id)
             # Get all movies excluding the ones the user has rated
             unrated_movies = db.session.query(Movie).filter(~Movie.id.in_(rated_movies)).all()
-            similar_users, predictions = recommended(data, unrated_movies, your_user_id)
+            similar_users, predictions = recommended(data, unrated_movies, current_user)
             print("Similar users: ", similar_users)
             print("Predictions: ", predictions)
 
@@ -286,7 +286,7 @@ def recommendations():
     # use the template to display the results 
 
     return render_template("recommendations.html", 
-                           your_user_id=your_user_id, 
+                           your_user_id=current_user.id, 
                            similar_users=similar_users, 
                            top_movies=top_movie_names, 
                            movies=recommended_movies, 
