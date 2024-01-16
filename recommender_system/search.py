@@ -7,6 +7,19 @@ import pandas as pd
 from models import db, User, Movie, Tag, Link, MovieGenre, Rating    
 
 def recommended(data, unrated_movies, your_user):
+    """
+    Return a list of recommended movies and similar users for the target user. The recommendation is made 
+    using user-based collaborative filtering with KNNWithMeans.
+
+    Parameters
+    ----------
+    data : pandas.DataFrame
+        The ratings data
+    unrated_movies : list of Movie
+        The list of movies that the target user has not rated
+    your_user : User
+        The target user
+    """
     # Split the data into training and testing sets - right now we only work with the training set
     trainset, testset = train_test_split(data, test_size=0.001)
     
@@ -24,12 +37,10 @@ def recommended(data, unrated_movies, your_user):
     # Convert external user ID to internal user index
     try:
         internal_user_id = trainset.to_inner_uid(your_user.id)
-        print(internal_user_id)
-        print("internal_user_id found in trainset")
     except ValueError:
         # Handle the case where the user ID is not in the trainset
         internal_user_id = None
-        print("User ID not found in trainset")
+        print("Error : User ID not found in trainset")
 
     # Get neighbors only if the user ID was found in the trainset
     similar_users = []
@@ -52,10 +63,8 @@ def recommended(data, unrated_movies, your_user):
                 # Get the rating if it exists
                 rating = 0.0
                 for item in trainset.ur[similar_user]:
-                    print(item)
                     if item[0] == internal_movie_id:
                         rating = item[1]
-                        print("rating found in trainset")
                         break
             except ValueError:
                 # Handle the case where the movie ID is not in the trainset
