@@ -327,12 +327,8 @@ def submit_rating(request, user_id):
     # Fetch the movie title for the response
     #title = db.session.query(Movie.title).filter(Movie.id == movie_id).first()[0]
     print("Rating submitted successfully")
-    return render_template("movies.html", movies=None, 
-                           user_id=user_id, genres=None, 
-                           selected_tab=None, rating=True,)
-    # Redirect to the referring page
-    #return redirect(url_for('movies_page'))
-    return
+    return redirect(url_for('movies_page'))
+
 def retrieve_additional_movie_data(movies, user_id):
     """
     Retrieves additional data for a list of movies, such as tags, links, average ratings,
