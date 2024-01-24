@@ -85,19 +85,8 @@
                     {% for movieId, link in links.items() %}
                         {% if movieId == m.id %}
                             {% for l in link %}
-                            <a class="label label-default" href ={{ "https://www.imdb.com/title/tt0" + l.imdb_id|string}}  >{{ "https://www.imdb.com/title/tt0" + l.imdb_id|string }}</a>
-
-                            {% endfor %}
-                        {% endif %}
-                    {% endfor %}
-                </p>
-
-                <p>
-                    {% for movieId, link in links.items() %}
-                        {% if movieId == m.id %}
-                            {% for l in link %}
-                            <a class="label label-default" href ={{ "https://www.themoviedb.org/movie/" + l.tmdb_id|string}}  >{{ "https://www.themoviedb.org/movie/" + l.tmdb|string }}</a>
-
+                            <a href="{{ 'https://www.imdb.com/title/tt0' + link.imdb_id|string }}" target="_blank"> <img src="../static/images/IMDb.png" alt="IMDb Image"></a>
+                            <a href="{{ 'https://www.themoviedb.org/movie/' + link.tmdb_id|string }}" target="_blank"> <img src="../static/images/TMDB.png"></a>
                             {% endfor %}
                         {% endif %}
                     {% endfor %}
