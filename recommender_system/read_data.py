@@ -5,9 +5,20 @@ import re
 
 
 def clean_title(title):
+    """
+    Remove special characters from the movie title.
+    """
     return re.sub("[^a-zA-Z0-9 ]", "", title)
 
 def check_and_read_data(db_session):
+    """
+    Check if the database is empty and read data from the csv files if it is.
+    
+    Parameters
+    ----------
+    db_session : SQLAlchemy database session object
+        The database session
+    """
     # check if we have movies in the database
     # read data if database is empty
 
@@ -36,9 +47,6 @@ def check_and_read_data(db_session):
                 count += 1
                 if count % 100 == 0:
                     print(count, " movies read")
-                # read only first 500 entries for testing
-                if count == 100:
-                    break
 
     if Link.query.count() == 0:
         # read movies from csv
@@ -61,9 +69,6 @@ def check_and_read_data(db_session):
                 count += 1
                 if count % 100 == 0:
                     print(count, " links read")
-                # read only first 500 entries for testing
-                if count == 100:
-                    break
 
     if Tag.query.count() == 0:
         # read movies from csv
@@ -87,9 +92,6 @@ def check_and_read_data(db_session):
                 count += 1
                 if count % 100 == 0:
                     print(count, " tags read")
-                # read only first 500 entries for testing
-                if count == 100:
-                    break
     
     if Rating.query.count() == 0:
         # read Ratings from csv
@@ -111,11 +113,8 @@ def check_and_read_data(db_session):
                         db_session.rollback()
                         pass
                 count += 1
-                if count % 5000 == 0:
+                if count % 100 == 0:
                     print(count, " Ratings read")
-                # read only first 1000 entries for testing
-                if count == 5000:
-                    break
 
       
     if User.query.count() == 0:
@@ -139,10 +138,6 @@ def check_and_read_data(db_session):
                         db_session.rollback()
                         pass
                 count += 1
-                if count % 5000 == 0:
+                if count % 100 == 0:
                     print(count, "user read")
-                # read only first 5000 entries for testing
-                if count == 5000:
-                    break
-
 

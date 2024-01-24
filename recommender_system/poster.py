@@ -2,6 +2,14 @@ import requests
 from bs4 import BeautifulSoup
 
 def get_poster_url(imdb_url):
+    """
+    Get the URL of the poster image from the IMDb page.
+
+    Parameters
+    ----------
+    imdb_url : str
+        The IMDb URL of the movie
+    """
     response = requests.get(imdb_url)
     soup = BeautifulSoup(response.content, 'html.parser')
 

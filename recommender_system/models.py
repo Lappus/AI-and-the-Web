@@ -8,6 +8,7 @@ db = SQLAlchemy()
 # NB: Make sure to add flask_user UserMixin as this adds additional fields and properties required by Flask-User
 
 class User(db.Model, UserMixin):
+    """User account model"""
     __tablename__ = 'users'
     id_seq = Sequence('user_id_seq', start=620)
     id = db.Column(db.Integer, id_seq, primary_key=True)
@@ -28,6 +29,7 @@ class User(db.Model, UserMixin):
     #    return f'<User: {self.username}> <ID: {self.id}> <password: {self.password}>'
 
 class Rating(db.Model):
+    """Rating model - contains the user_id, movie_id and rating for each user-movie pair."""
     __tablename__ = 'ratings'
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True, nullable=False)
     movie_id = db.Column(db.Integer, db.ForeignKey('movies.id'), primary_key=True, nullable=False)
@@ -37,6 +39,7 @@ class Rating(db.Model):
     #timestamp = db.Column(db.Integer, primary_key=True, nullable=False)
 
 class Movie(db.Model):
+    """Movie model - contains the movie title and genres"""
     __tablename__ = 'movies'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100, collation='NOCASE'), nullable=False, unique=True)
@@ -44,18 +47,21 @@ class Movie(db.Model):
     genres = db.relationship('MovieGenre', backref='movie', lazy=True)
 
 class MovieGenre(db.Model):
+    """MovieGenre model - contains the movie_id and genre for each movie"""
     __tablename__ = 'movie_genres'
     id = db.Column(db.Integer, primary_key=True)
     movie_id = db.Column(db.Integer, db.ForeignKey('movies.id'), nullable=False)
     genre = db.Column(db.String(255), nullable=False, server_default='')
 
 class Link(db.Model):
+    """Link model - contains the movie_id, imdb_id and tmdb_id for each movie"""
     __tablename__ = 'links'
     movie_id = db.Column(db.Integer, db.ForeignKey('movies.id'), primary_key=True, nullable=False)
     imdb_id = db.Column(db.Integer,  nullable=False)
     tmdb_id = db.Column(db.Integer,  nullable=False)
     
 class Tag(db.Model):
+    """Tag model - contains the user_id, movie_id, tag and timestamp for each user-movie pair."""
     __tablename__ = 'tags'
     user_id = db.Column(db.Integer, db.ForeignKey('movies.id'), primary_key=True,  nullable=False)
     movie_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True,  nullable=False)
@@ -63,6 +69,7 @@ class Tag(db.Model):
     timestamp = db.Column(db.Integer, primary_key=True,  nullable=False)
 
 class AverageRating(db.Model):
+    """AverageRating model - contains the movie_id and average rating for each movie"""
     __tablename__ = 'average_rating'
     movie_id = db.Column(db.Integer, db.ForeignKey('movies.id'), primary_key=True, nullable=False)
     rating = db.Column(db.Float, primary_key=True, nullable=False)

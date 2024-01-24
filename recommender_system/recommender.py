@@ -16,9 +16,10 @@ from search import recommended
 
 # Class-based application configuration
 class ConfigClass(object):
-    """ Flask application config 
-        Defines the configuration settings for the flask application.
-        It sets the Database URI to a SQLite database file names movie_recommender.sqlite
+    """ 
+    Flask application config 
+    Defines the configuration settings for the flask application.
+    It sets the Database URI to a SQLite database file names movie_recommender.sqlite
     """
 
     # Flask settings
@@ -180,6 +181,28 @@ def movies_page():
 @app.route('/recommendations', methods=['GET', 'POST'])
 @login_required  # User must be authenticated
 def recommendations():
+    """
+    Route for the recommendation page of the application, accessible only to logged-in users.
+
+    This route handles both GET and POST requests. It serves the following primary functions:
+    1. Recommend Movies: Based on the user's ratings, it recommends movies that the user is likely to enjoy.
+        If the user has less the 20 ratings, it recommends the top 10 movies on average instead of personalized recommendations.
+
+    2. Genre Filtering: If a specific genre is selected, only movies of that genre are displayed.
+
+
+    Returns:
+        Response: A response object that renders the 'recommendations.html' template with the necessary context, 
+                  including similar users, recommended movies, average ratings and additional movie data.
+                  your_user_id=current_user.id, 
+                           similar_users=similar_users, 
+                           top_movies=top_movie_names, 
+                           movies=recommended_movies, 
+                           tags=tags, 
+                           links=links,
+                           average_ratings=average_ratings,
+                           wanted_genre=wanted_genre
+    """
 
     your_user_id = current_user  # later on current_user would be used 
     wanted_genre = None
@@ -212,21 +235,12 @@ def recommendations():
             # get all movies that the user hasn't rated and also that have the wanted genre
             unrated_movies_with_genre = db.session.query(Movie).filter(~Movie.id.in_(rated_movies)).\
                 filter(Movie.id.in_(movie_ids_with_genre)).all()
-            print("Unrated movies with genre: ", unrated_movies_with_genre)
-            print(data)
-            print("Rated movies: ", rated_movies)
-            print("your user id: ", your_user_id)
             similar_users, predictions = recommended(data, unrated_movies_with_genre,current_user)
 
         else:
-            print(data)
-            print("Rated movies: ", rated_movies)
-            print("your user id: ", your_user_id)
             # Get all movies excluding the ones the user has rated
             unrated_movies = db.session.query(Movie).filter(~Movie.id.in_(rated_movies)).all()
             similar_users, predictions = recommended(data, unrated_movies, current_user)
-            print("Similar users: ", similar_users)
-            print("Predictions: ", predictions)
 
         # Get the top 3 movies with the best predictions
         top_movies = sorted(predictions.items(), key=lambda x: x[1], reverse=True)[:3]
@@ -246,22 +260,15 @@ def recommendations():
                             outerjoin(AverageRating, Movie.id == AverageRating.movie_id).\
                             order_by(AverageRating.rating.desc()).\
                             limit(10).all()
-            print("Not enough ratings to make recommendations")
+            print("Not enough ratings to make personal recommendations")
             print("Top movies: ", top_movies)
-            print("Top movies type: ", type(top_movies))
-            print("Top movies length: ", top_movies.__len__())
             extracted_ids = [movie.id for movie in top_movies]
-            print(extracted_ids)
 
         #else its just the top 10 movies on average regardless of genre 
         else:
             top_movies = db.session.query(AverageRating).order_by(AverageRating.rating.desc()).limit(10).all()
-            print("Not enough ratings to make recommendations")
-            print("Top movies: ", top_movies)
-            print("Top movies type: ", type(top_movies))
-            print("Top movies length: ", top_movies.__len__())
+            print("Not enough ratings to make personal recommendations")
             extracted_ids = [movie.movie_id for movie in top_movies]
-            print(extracted_ids)
             wanted_genre=None
 
         similar_users = None
@@ -334,9 +341,13 @@ def retrieve_additional_movie_data(movies, user_id):
     Retrieves additional data for a list of movies, such as tags, links, average ratings,
     and user-specific ratings.
 
-    :param movies: List of Movie objects.
-    :param user_id: ID of the current user (can be None if user is not logged in).
-    :return: Dictionary containing tags, links, average ratings, and user ratings for each movie.
+    Parameters:
+    -----------
+    movies : list of Movie
+        The list of movies for which additional data is to be retrieved
+    user_id : int
+        The ID of the user for whom the ratings are to be retrieved
+    return: Dictionary containing tags, links, average ratings, and user ratings for each movie.            
     """
     tags = {}
     links = {}

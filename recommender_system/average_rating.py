@@ -2,6 +2,9 @@ import numpy as np
 from models import db, Movie, Rating, AverageRating
 
 def calc_average_rating():
+    """
+    Calculate the average rating for each movie and store it in the AverageRating table.
+    """
     for movie in Movie.query.all():
         movie_id = movie.id
         ratings = Rating.query.filter_by(movie_id=movie_id).all()
