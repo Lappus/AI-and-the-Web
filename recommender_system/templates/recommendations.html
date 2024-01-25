@@ -9,15 +9,15 @@
 <div class="container">
     <h2>Your recommendations! </h2>
     {% if similar_users != None and wanted_genre==None %}
-        <p>Users similar to you (your id: {{your_user_id}}): {{similar_users}}. Your top movies with respective estimated rating: {{top_movies}}</p>
+        <p>Your top movies with respective estimated rating:</p>
     {% elif similar_users != None and wanted_genre %}
-        <p>You have rated less then 20 movies, so you get no personal recommandation, sorry! Here are up to 10 of the best rated movies instead: {{top_movies}}</p>
+        <p>Your top movies with respective estimated rating:</p>
         <p> Click a genre to filter for genre</p>
     {% elif similar_users == None and wanted_genre == None %}
-        <p> You have rated less then 20 movies, so you get no personal recommandation, sorry! Here are up to 10 of the best rated movies instead: {{top_movies}}</p>
+        <p> You have rated less then 10 movies, so you get no personal recommandation, sorry! Here are up to 10 of the best rated movies instead:</p>
         <p> Click a genre to filter for genre</p>
     {% elif similar_users == None and wanted_genre %}
-        <p> You have rated less then 20 movies, so you get no personal recommandation, sorry! Here are up to 10 of the best rated movies in the genre: <strong>{{wanted_genre}} </strong></p>
+        <p> You have rated less then 10 movies, so you get no personal recommandation, sorry! Here are up to 10 of the best rated movies in the genre: <strong>{{wanted_genre}} </strong></p>
     {% endif %}
 
     <a href="{{ url_for('recommendations') }}" class="btn btn-primary"> Recalculate best matches </a>
@@ -95,11 +95,11 @@
                     {% for movieId, rating in average_ratings.items() %}
                         {% if movieId == m.id %}
                             {% if rating is not none %}
-                                <span style="color: black;">{{ rating.rating }}</span>
+                                <span style="color: black;"> Average rating: {{ rating.rating }}</span>
                                 {% if rating.rating is not none and rating.rating < 1.5  %}
                                     <img src="../static/images/onestar.png" alt="1">
                                 {% elif rating.rating >= 1.5 and rating.rating < 2.5 %}
-                                    <img src="../static/images/twostars.png" alt=2">
+                                    <img src="../static/images/twostars.png" alt="2">
                                 {% elif rating.rating >= 2.5 and rating.rating < 3.5 %}
                                     <img src="../static/images/threestars.png" alt="3">
                                 {% elif rating.rating >= 3.5 and rating.rating < 4.5 %}
@@ -111,29 +111,6 @@
                         {% endif %}
                     {% endfor %}
                 </p>    
-
-            </div>
-            <div class="panel-footer">Rate:
-                <form method="post" action="{{ url_for('movies_page') }}">
-                    <input type="hidden" name="movie_id" value="{{ m.id }}">
-                    <button type="submit" name="rating" value="1" class="card-link btn btn-link"><img src="../static/images/onestar.png" alt="1"></button>
-                </form>
-                <form method="post" action="{{ url_for('movies_page') }}">
-                    <input type="hidden" name="movie_id" value="{{ m.id }}">
-                    <button type="submit" name="rating" value="2" class="card-link btn btn-link"><img src="../static/images/twostars.png" alt="2"></button>
-                </form>
-                <form method="post" action="{{ url_for('movies_page') }}">
-                    <input type="hidden" name="movie_id" value="{{ m.id }}">
-                    <button type="submit" name="rating" value="3" class="card-link btn btn-link"><img src="../static/images/threestars.png" alt="3"></button>
-                </form>
-                <form method="post" action="{{ url_for('movies_page') }}">
-                    <input type="hidden" name="movie_id" value="{{ m.id }}">
-                    <button type="submit" name="rating" value="4" class="card-link btn btn-link"><img src="../static/images/fourstars.png" alt="4"></button>
-                </form>
-                <form method="post" action="{{ url_for('movies_page') }}">
-                    <input type="hidden" name="movie_id" value="{{ m.id }}">
-                    <button type="submit" name="rating" value="5" class="card-link btn btn-link"><img src="../static/images/fivestars.png" alt="5"></button>
-                </form>
             </div>
         </div>
     {% endfor %}
