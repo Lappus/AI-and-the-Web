@@ -49,40 +49,29 @@
     {% endfor %}
   </form>
 </div>
-{% endif %} {% if movies %} {% for movie in movies %}
-<div class="panel panel-default">
-  <div class="panel-heading"><b>{{ movie.title }}</b></div>
-  <div class="panel-body">
-    {% include 'movies_display.html' %}
+{% endif %}
 
-    <div class="panel-footer">
-      Rate: {% for i in range(1, 6) %}
-      <form method="post" action="{{ url_for('movies_page') }}">
-        <input type="hidden" name="movie_id" value="{{ movie.id }}" />
-        <button
-          type="submit"
-          name="rating"
-          value="{{ i }}"
-          class="card-link btn btn-link"
-        >
-          {% if i == 1 %}
-          <img src="{{ url_for('static', filename='images/onestar.png') }}" alt="1 Star"/>
-          {% elif i == 2 %}
-          <img src="{{ url_for('static', filename='images/twostars.png') }}" alt="2 Stars"/>
-          {% elif i == 3 %}
-          <img src="{{ url_for('static', filename='images/threestars.png') }}" alt="3 Stars"/>
-          {% elif i == 4 %}
-          <img src="{{ url_for('static', filename='images/fourstars.png') }}" alt="4 Stars"/>
-          {% elif i == 5 %}
-          <img src="{{ url_for('static', filename='images/fivestars.png') }}" alt="5 Stars"/>
-          {% endif %}
-        </button>
-      </form>
-      {% endfor %} 
-    </div>
-  </div>
+{% if movies %}
+<div class="pagination d-flex justify-content-end">
+  {% if movies.has_prev %}
+  <a href="{{ url_for('movies_page', page=movies.prev_num) }}" class="btn btn-primary" style="margin-right: 10px;"> < </a>
+  {% endif %}
+  <span class="btn btn-primary">Page {{ movies.page }} of {{ movies.pages }}</span>
+  {% if movies.has_next %}
+  <a href="{{ url_for('movies_page', page=movies.next_num) }}" class="btn btn-primary me-3" style="margin-left: 10px;"> > </a>
+  {% endif %}
 </div>
-{% endfor %} {% else %}
+  {% for movie in movies %}
+    <div class="panel panel-default">
+      <div class="panel-heading"><b>{{ movie.title }}</b></div>
+      <div class="panel-body">
+        {% include 'movies_display.html' %}
+      </div>
+    </div>
+  {% endfor %}
+  <!-- Pagination links -->
+  
+{% else %}
 <p>No movies to display.</p>
 {% endif %}
 

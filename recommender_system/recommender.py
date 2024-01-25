@@ -150,18 +150,19 @@ def movies_page():
     if sort_arg:
         session['sort_arg'] = sort_arg
 
+    # Pagination is included in every sorting possibility 
     # Display movies based on selected tab and genre
     if sort_arg == "genre":
         selected_tab = 'genre'
         # Filter movies by selected genre, if any
-        movies = Movie.query.join(MovieGenre).filter(MovieGenre.genre == genre_arg).all() if genre_arg else Movie.query.join(MovieGenre).all()
+        movies = Movie.query.join(MovieGenre).filter(MovieGenre.genre == genre_arg).paginate(per_page=10) if genre_arg else Movie.query.join(MovieGenre).paginate(per_page=10)
     elif sort_arg == 'a_to_z':
         # Sort movies alphabetically
-        movies = Movie.query.order_by(Movie.title).all()
+        movies = Movie.query.order_by(Movie.title).paginate(per_page=10)
         selected_tab = 'a_to_z'
     elif sort_arg == 'ratings':
         # Sort movies by ratings
-        movies = Movie.query.join(AverageRating).order_by(AverageRating.rating.desc()).all()
+        movies = Movie.query.join(AverageRating).order_by(AverageRating.rating.desc()).paginate(per_page=10)
         selected_tab = 'ratings'
 
     # Handle movie rating submission by the user
@@ -186,7 +187,7 @@ def recommendations():
 
     This route handles both GET and POST requests. It serves the following primary functions:
     1. Recommend Movies: Based on the user's ratings, it recommends movies that the user is likely to enjoy.
-        If the user has less the 20 ratings, it recommends the top 10 movies on average instead of personalized recommendations.
+        If the user has less the 10 ratings, it recommends the top 10 movies on average instead of personalized recommendations.
 
     2. Genre Filtering: If a specific genre is selected, only movies of that genre are displayed.
 
@@ -222,7 +223,7 @@ def recommendations():
     print(type(rated_movies))
     print(rated_movies.__len__())
 
-    if rated_movies.__len__() >= 20:
+    if rated_movies.__len__() >= 10:
         if request.method == 'POST':
             # get the genre from the html Code
             wanted_genre = request.form.get('genre')
@@ -247,7 +248,7 @@ def recommendations():
          # extract the number of the sorted predictions since we get a tuple (Movie.id and rating)
         extracted_ids = [item[0] for item in top_movies]
 
-    # If the user has less than 20 ratings we recommend the top 10 movies on average instead of personalized  recommendations
+    # If the user has less than 10 ratings we recommend the top 10 movies on average instead of personalized  recommendations
     else:
         #if genre is selected we recommend the top 10 movies with the selected genre
         if request.method == 'POST':
