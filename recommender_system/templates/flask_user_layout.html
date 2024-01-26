@@ -18,11 +18,8 @@
 		<div class="row">
 			<div class="col-md-12">
 				<nav class="navbar navbar-md">
-					<div class="navbar-brand"><a href="../">{{ user_manager.USER_APP_NAME }}</a></div>
+					<div class="navbar-brand"><a href="./">{{ user_manager.USER_APP_NAME }}</a></div>
 					<ul class="nav">
-						<li class="nav-item">
-							<a class="nav-link" href="/">HOME</a>
-						</li>
                         <!-- Authentication links -->
                         {% if call_or_get(current_user.is_authenticated) %}
                             <li class="nav-item">
