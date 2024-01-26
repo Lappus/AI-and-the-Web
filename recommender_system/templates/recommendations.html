@@ -9,9 +9,9 @@
 <div class="container">
     <h2>Your recommendations! </h2>
     {% if similar_users != None and wanted_genre==None %}
-        <p>Your top movies with respective estimated rating:</p>
+        <p>Your top movies:</p>
     {% elif similar_users != None and wanted_genre %}
-        <p>Your top movies with respective estimated rating:</p>
+        <p>Your top movies:</p>
         <p> Click a genre to filter for genre</p>
     {% elif similar_users == None and wanted_genre == None %}
         <p> You have rated less then 10 movies, so you get no personal recommandation, sorry! Here are up to 10 of the best rated movies instead:</p>
