@@ -25,3 +25,6 @@
 
 - it is very pretty, see for yourself :)
 - search function
+- recommendation filtered by genre
+- movie overview ordering via ranking and alphabetically
+- average ratings
